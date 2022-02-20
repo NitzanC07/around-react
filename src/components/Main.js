@@ -1,7 +1,8 @@
+import profilePicture from '../images/imageprofile.png';
 
 function handleEditProfileClick() {
     document.querySelector('.popup_type_edit-profile').classList.add('popup_open')
-    
+
 }
 
 function handleEditAvatarClick() {
@@ -17,7 +18,7 @@ function Main() {
         <main className="main-content">
             <section className="profile">
                 <div className="profile__avatar">
-                    <div className="profile__avatar-picture"></div>
+                    <img className="profile__avatar-picture" src={profilePicture} alt="Profile Picture" />
                     <div className="profile__avatar-active" onClick={handleEditAvatarClick}></div>
                 </div>
                     <div className="profile__group">
