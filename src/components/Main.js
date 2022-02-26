@@ -2,7 +2,6 @@ import profilePicture from '../images/imageprofile.png';
 
 function handleEditProfileClick() {
     document.querySelector('.popup_type_edit-profile').classList.add('popup_open')
-
 }
 
 function handleEditAvatarClick() {
@@ -13,7 +12,8 @@ function handleAddPlaceClick() {
     document.querySelector('.popup_type_add-card').classList.add('popup_open')
 }
 
-function Main() {
+function Main(props) {
+    console.log('main props', props);
     return(
         <main className="main-content">
             <section className="profile">

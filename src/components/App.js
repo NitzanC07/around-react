@@ -2,7 +2,16 @@ import Header from './Header.js';
 import Main from './Main.js';
 import Footer from './Footer.js';
 import PopupWithForm from './PopuoWIthForm.js';
+import { useState } from 'react';
 
+
+const submitHandler = (e) => {
+    e.preventDefault();
+    console.log('Submited', e.target);
+}
+
+
+//** This the main file of the application.  */
 function App() {
   return (
     <div className="page">
@@ -13,7 +22,7 @@ function App() {
             <Footer />
 
             <PopupWithForm name='edit-profile' title='Edit Profile'>
-                <form className="popup__form popup__form_profile" name="edit-profile" noValidate>
+                <form className="popup__form popup__form_profile" name="edit-profile" onSubmit={submitHandler} noValidate>
                     <label className="popup__field">
                         <input type="text" className="popup__input popup__input_content_name" id="input-name" name="name" placeholder="What is your name" minLength="2" maxLength="40" required />
                         <span className="input-name-error"></span>
@@ -27,7 +36,7 @@ function App() {
             </PopupWithForm>
 
             <PopupWithForm name='add-card' title='New Place'>
-                <form className="popup__form popup__form_addCard" name="add-place" noValidate>
+                <form className="popup__form popup__form_addCard" name="add-place" onSubmit={submitHandler} noValidate>
                     <label className="popup__field">
                         <input type="text" className="popup__input popup__input_type_title" id="input-title" name="name" placeholder="Title" minLength="1" maxLength="30" required />
                         <span className="input-title-error"></span>
@@ -41,7 +50,7 @@ function App() {
             </PopupWithForm>
 
             <PopupWithForm name='avatar' title='Change Profile Picture'>
-                <form className="popup__form popup__form_avatar" name="avatar" noValidate>
+                <form className="popup__form popup__form_avatar" name="avatar" onSubmit={submitHandler} noValidate>
                     <label className="popup__field">
                         <input type="url" className="popup__input popup__input_type_avatar" id="inputAvatar" name="avatar" placeholder="Image URL" required />
                         <span className="input-avatar-error"></span>
@@ -53,7 +62,7 @@ function App() {
             <PopupWithForm name='delete-card' title='Are you Sure?'>
                 <div className="popup__container">
                     <button className="popup__close-button popup__close-button_card" type="button"></button>
-                    <form className="popup__form popup__form_add-card" name="delete-card" noValidate>
+                    <form className="popup__form popup__form_add-card" name="delete-card" onSubmit={submitHandler} noValidate>
                         <button className="popup__submit-button popup__submit-button_card" type="submit">Yes</button>
                     </form>
                 </div>
