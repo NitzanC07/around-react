@@ -1,13 +1,13 @@
 
 function PopupWithForm(props) {
-    console.log('popup with form props', props)
     return(
         <>
-            <div className={`popup popup_type_${props.name}`}>
+            <div className={`popup popup_type_${props.name} ${props.isOpen}`}>
                 <div className="popup__container">
                     <button 
-                        className="popup__close-button popup__close-button_profile" 
-                        type="button">
+                        type="button"
+                        className="popup__close-button popup__close-button_profile"
+                        onClick={props.onClose}>
                     </button>
                     <h2 
                         className="popup__header">
