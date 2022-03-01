@@ -1,25 +1,29 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import profilePicture from '../images/imageprofile.png';
 import api from '../utils/api.js';
+import Card from './Card.js';
 
 function Main(props) {
 
     const [userName, setUserName] = useState();
     const [userDescription, setUserDescription] = useState();
     const [userAvatar, setUserAvatar] = useState();
+    const [userId, setUserId] = useState();
     const [cards, setCards] = useState([]);
 
-    Promise.all([api.getUserInfo(), api.getInitialCards()])
-    .then(([userData, cardsData]) => {
-        console.log(userData);
-        setUserName(userData.name)
-        setUserDescription(userData.about)
-        setUserAvatar(userData.avatar)
-        // setCards(cardsData)
-    })
-    .catch(err => {
-        console.log(err);
-    });
+    React.useEffect(() => {
+        Promise.all([api.getUserInfo(), api.getInitialCards()])
+        .then(([userData, cardsData]) => {
+            setUserId(userData._id)
+            setUserAvatar(userData.avatar)
+            setUserName(userData.name)
+            setUserDescription(userData.about)
+            setCards(cardsData)
+        })
+        .catch(err => {
+            console.log(err);
+        });
+    }, [])
 
     return(
         <main className="main-content">
@@ -38,7 +42,11 @@ function Main(props) {
             
             <section className="cards">
                 <ul className="cards__container">
-                    
+                    {
+                        cards.map((item) => (
+                            <Card card={item} key={item._id} id={item._id} userId={userId} />
+                        ))
+                    }
                 </ul>
             </section>
         </main>
@@ -46,17 +54,3 @@ function Main(props) {
 }
 
 export default Main;
-
-{/* <template id="card-template">
-    <li class="cards__card">
-        <img class="cards__image" src=" " alt=" ">
-        <button class="cards__delete-button" type="button"></button>
-        <div class="cards__group">
-            <h2 class="cards__header"></h2>
-            <div class="cards__likes">
-                <button class="cards__like-button" type="button"></button>
-                <span class="cards__likes-counter"></span>
-            </div>
-        </div>
-    </li>
-</template> */}
