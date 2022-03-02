@@ -38,6 +38,7 @@
 @import url(./blocks/cards/__image/cards__image.css);
 @import url(./blocks/popup/__container/popup__container-image.css);
 @import url(./blocks/cards/__delete-button/cards__delete-button.css);
+@import url(./blocks/cards/__delete-button/_invisible/cards__delete-button_invisible.css);
 @import url(./blocks/cards/__group/cards__group.css);
 @import url(./blocks/cards/__header/cards__header.css);
 @import url(./blocks/cards/__like-button/cards__like-button.css);

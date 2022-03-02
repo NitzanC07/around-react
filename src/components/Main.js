@@ -5,6 +5,8 @@ import Card from './Card.js';
 
 function Main(props) {
 
+    console.log("Main props:", props);
+
     const [userName, setUserName] = useState();
     const [userDescription, setUserDescription] = useState();
     const [userAvatar, setUserAvatar] = useState();
@@ -44,7 +46,7 @@ function Main(props) {
                 <ul className="cards__container">
                     {
                         cards.map((item) => (
-                            <Card card={item} key={item._id} id={item._id} userId={userId} />
+                            <Card card={item} key={item._id} id={item._id} userId={userId} onCardClick={props.onCardClick}/>
                         ))
                     }
                 </ul>
