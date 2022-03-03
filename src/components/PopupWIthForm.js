@@ -7,8 +7,8 @@ function PopupWithForm(props) {
                     <button 
                         type="button"
                         className="popup__close-button popup__close-button_profile"
-                        onClick={props.onClose}>
-                    </button>
+                        onClick={props.onClose}
+                    />
                     <h2 
                         className="popup__header">
                         {props.title}

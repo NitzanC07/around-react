@@ -1,8 +1,10 @@
 import Header from './Header.js';
 import Main from './Main.js';
 import Footer from './Footer.js';
+import Card from './Card.js';
 import PopupWithForm from './PopupWIthForm.js';
 import PopupWithImage from './PopupWithImage.js';
+import api from '../utils/api.js';
 import { useState } from 'react';
 
 //** This the main file of the application.  */
@@ -37,7 +39,7 @@ function App() {
       }
     
     function handleEditProfileClick() {
-        setStateEditProfilePopupOpen(!isEditProfilePopupOpen);
+        setStateEditProfilePopupOpen(true);
         document.addEventListener("keyup", handleEscClose);
         document.addEventListener("mouseup", handleClosePopupwWithOverlay);
     }
@@ -55,17 +57,37 @@ function App() {
     }
 
     function handleImageClick() {
-        console.log("Card was clicked!")
+        console.log("Card was clicked!", Card.name, Card.link)
         setStateImagePopupOpen(true);
         document.addEventListener("keyup", handleEscClose);
         document.addEventListener("mouseup", handleClosePopupwWithOverlay);
     }
 
-    const submitHandler = (e) => {
+    function getInputsValues(specificForm) {
+        const inputsValues = {};
+        const inputs = Array.from(specificForm.querySelectorAll(".popup__input"))
+        inputs.forEach(input => {
+            inputsValues[input.name] = input.value;
+        })
+        return inputsValues
+    }
+
+    const submitHandlerEditProfile = (e) => {
         e.preventDefault();
         console.log('Submited', e.target);
+        const profileData = getInputsValues(e.target);
+        api.setUserInfo(profileData)
+            .then((res) => {
+                console.log("response", res);
+            })
+            .catch(err => console.log("Error:", err));
         setStateEditProfilePopupOpen(false);
         closeAllPopups();
+    }
+
+    const submitHandler = (e) => {
+        e.preventDefault();
+        console.log("Submitted!!!", e.target)
     }
 
     return (
@@ -85,10 +107,16 @@ function App() {
                     />
                 <Footer />
 
-                <PopupWithImage className="popup popup_type_image" isOpen={isImagePopupOpen ? 'popup_open' : ''} onClose={closeAllPopups} />
+                <PopupWithImage 
+                    className="popup popup_type_image" 
+                    isOpen={isImagePopupOpen ? 'popup_open' : ''} 
+                    onClose={closeAllPopups} 
+                    // name={imageName}
+                    // link={imageSrc}
+                />
 
                 <PopupWithForm name='edit-profile' title='Edit Profile' isOpen={isEditProfilePopupOpen ? 'popup_open' : ''} onClose={closeAllPopups}>
-                    <form className="popup__form popup__form_profile" name="edit-profile" onSubmit={submitHandler} noValidate>
+                    <form className="popup__form popup__form_profile" name="edit-profile" onSubmit={submitHandlerEditProfile} noValidate>
                         <label className="popup__field">
                             <input type="text" className="popup__input popup__input_content_name" id="input-name" name="name" placeholder="What is your name" minLength="2" maxLength="40" required />
                             <span className="input-name-error"></span>

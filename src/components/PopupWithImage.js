@@ -1,6 +1,7 @@
+import Card from './Card.js';
 
 function PopupWithImage(props) {
-    console.log("Image props", props)
+    console.log("PopupWithImage", props)
     return(
         <>
             <div className={`popup popup_type_image ${props.isOpen}`}>
