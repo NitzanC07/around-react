@@ -1,7 +1,7 @@
 import Card from './Card.js';
 
 function PopupWithImage(props) {
-    console.log("PopupWithImage", props)
+    // console.log("PopupWithImage", props)
     return(
         <>
             <div className={`popup popup_type_image ${props.isOpen}`}>
@@ -13,10 +13,10 @@ function PopupWithImage(props) {
                     />
                     <img 
                         className="popup__image" 
-                        src=" " 
-                        alt=" " 
+                        src={props.cardData.link}
+                        alt={props.cardData.name}
                     />
-                    <div className="popup__image-description">Image</div>
+                    <div className="popup__image-description">{props.cardData.name}</div>
                 </div>
             </div>
         </>

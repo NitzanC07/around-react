@@ -5,6 +5,8 @@ import Card from './Card.js';
 
 function Main(props) {
 
+    // console.log("Main: ", props);
+
     const [userName, setUserName] = useState();
     const [userDescription, setUserDescription] = useState();
     const [userAvatar, setUserAvatar] = useState();
@@ -51,7 +53,10 @@ function Main(props) {
                                 userId={userId} 
                                 name={item.name}
                                 link={item.link}
-                                onCardClick={props.onCardClick}/>
+                                onCardClick={props.onCardClick}
+                                deleteCard={props.deleteCard}
+                                likeCard={props.likeCard}
+                            />
                         ))
                     }
                 </ul>

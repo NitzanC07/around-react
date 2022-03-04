@@ -15,7 +15,7 @@ function App() {
     const [isAddPlacePopupOpen, setStateAddPlacePopupOpen] = useState(false);
     const [isDeleteCardPopupOpen, setStateDeleteCardPopupOpen] = useState(false);
     const [isImagePopupOpen, setStateImagePopupOpen] = useState(false)
-
+    
     function closeAllPopups() {
         setStateEditProfilePopupOpen(false);
         setStateEditAvatarPopupOpen(false);
@@ -36,31 +36,6 @@ function App() {
         if (evt.target.classList.contains("popup_open")) {
             closeAllPopups();
         }
-      }
-    
-    function handleEditProfileClick() {
-        setStateEditProfilePopupOpen(true);
-        document.addEventListener("keyup", handleEscClose);
-        document.addEventListener("mouseup", handleClosePopupwWithOverlay);
-    }
-    
-    function handleEditAvatarClick() {
-        setStateEditAvatarPopupOpen(true);
-        document.addEventListener("keyup", handleEscClose);
-        document.addEventListener("mouseup", handleClosePopupwWithOverlay);
-    }
-    
-    function handleAddPlaceClick() {
-        setStateAddPlacePopupOpen(true);
-        document.addEventListener("keyup", handleEscClose);
-        document.addEventListener("mouseup", handleClosePopupwWithOverlay);
-    }
-
-    function handleImageClick() {
-        console.log("Card was clicked!", Card.name, Card.link)
-        setStateImagePopupOpen(true);
-        document.addEventListener("keyup", handleEscClose);
-        document.addEventListener("mouseup", handleClosePopupwWithOverlay);
     }
 
     function getInputsValues(specificForm) {
@@ -71,23 +46,113 @@ function App() {
         })
         return inputsValues
     }
+    
+    const [selectedCard, setSelectedCard] = useState({})
+
+    function handleImageClick(card) {
+        // console.log("Card was clicked!", card.target);
+        setSelectedCard({name: card.target.alt, link: card.target.src})
+        setStateImagePopupOpen(true);
+        document.addEventListener("keyup", handleEscClose);
+        document.addEventListener("mouseup", handleClosePopupwWithOverlay);
+    }
+
+    /** Methods for user details. */
+    function handleEditProfileClick() {
+        setStateEditProfilePopupOpen(true);
+        document.addEventListener("keyup", handleEscClose);
+        document.addEventListener("mouseup", handleClosePopupwWithOverlay);
+    }
 
     const submitHandlerEditProfile = (e) => {
         e.preventDefault();
-        console.log('Submited', e.target);
         const profileData = getInputsValues(e.target);
         api.setUserInfo(profileData)
             .then((res) => {
-                console.log("response", res);
+                console.log("Response", res);
+                document.querySelector(".profile__name").textContent = res.name;
+                document.querySelector(".profile__description").textContent = res.about;
             })
-            .catch(err => console.log("Error:", err));
-        setStateEditProfilePopupOpen(false);
+            .catch(err => 
+                console.log("Error:", err)
+            );
         closeAllPopups();
+    }
+
+    /** Methods for cahnging avatar (profile picture) */
+    function handleEditAvatarClick() {
+        setStateEditAvatarPopupOpen(true);
+        document.addEventListener("keyup", handleEscClose);
+        document.addEventListener("mouseup", handleClosePopupwWithOverlay);
+    }
+
+    const submitHandlerAvatar = (e) => {
+        e.preventDefault();
+        console.log("Submitted!!!", e.target);
+        const newAvatar = getInputsValues(e.target);
+        console.log(newAvatar);
+        api.changeAvatar(newAvatar)
+            .then((res) => {
+                console.log("Response:", res);
+                document.querySelector(".profile__avatar-picture").src = res.avatar;
+            })
+            .catch(err => 
+                console.log("Error:", err)
+            );
+        closeAllPopups()
+    }
+
+    /** Methods for adding new card. */
+
+    function handleAddPlaceClick() {
+        console.log("Open popup for add card.");
+        setStateAddPlacePopupOpen(true);
+        document.addEventListener("keyup", handleEscClose);
+        document.addEventListener("mouseup", handleClosePopupwWithOverlay);
+    }
+
+    function handleDeleteCard(card) {
+        console.log("Card deleted!!!", card)
+        
+
+    }
+
+    function handleLikeCard(Card) {
+        console.log("Card liked!!!", Card.props)
+        
+    }
+
+    const submitHandlerAddCard = (e) => {
+        e.preventDefault();
+        console.log("Submitted!!!", e.target);
+        const newCard = getInputsValues(e.target);
+        console.log(newCard);
+        api.createCard(newCard)
+            .then((res) => {
+                console.log("Response:", res);
+                <Card 
+                    card={res} 
+                    key={res._id}
+                    id={res._id} 
+                    userId={res.owner._id} 
+                    name={res.name}
+                    link={res.link}
+                    onCardClick={handleImageClick}  
+                />
+                console.log("Card", Card);
+                document.querySelector(".cards__container").prepend(newCard);
+            })
+            .catch(err => 
+                console.log("Error:", err)
+            );
+        closeAllPopups()
     }
 
     const submitHandler = (e) => {
         e.preventDefault();
-        console.log("Submitted!!!", e.target)
+        console.log("Submitted!!!", e.target);
+
+        closeAllPopups()
     }
 
     return (
@@ -104,6 +169,8 @@ function App() {
                     isEditAvatarPopupOpen={isEditAvatarPopupOpen}
                     onCardClick={handleImageClick}
                     isImagePopupOpen={isImagePopupOpen}
+                    deleteCard={handleDeleteCard}
+                    likeCard={handleLikeCard}
                     />
                 <Footer />
 
@@ -111,8 +178,7 @@ function App() {
                     className="popup popup_type_image" 
                     isOpen={isImagePopupOpen ? 'popup_open' : ''} 
                     onClose={closeAllPopups} 
-                    // name={imageName}
-                    // link={imageSrc}
+                    cardData={selectedCard}
                 />
 
                 <PopupWithForm name='edit-profile' title='Edit Profile' isOpen={isEditProfilePopupOpen ? 'popup_open' : ''} onClose={closeAllPopups}>
@@ -130,7 +196,7 @@ function App() {
                 </PopupWithForm>
 
                 <PopupWithForm name='add-card' title='New Place' isOpen={isAddPlacePopupOpen ? 'popup_open' : ''} onClose={closeAllPopups}>
-                    <form className="popup__form popup__form_addCard" name="add-place" onSubmit={submitHandler} noValidate>
+                    <form className="popup__form popup__form_addCard" name="add-place" onSubmit={submitHandlerAddCard} noValidate>
                         <label className="popup__field">
                             <input type="text" className="popup__input popup__input_type_title" id="input-title" name="name" placeholder="Title" minLength="1" maxLength="30" required />
                             <span className="input-title-error"></span>
@@ -144,7 +210,7 @@ function App() {
                 </PopupWithForm>
 
                 <PopupWithForm name='avatar' title='Change Profile Picture' isOpen={isEditAvatarPopupOpen ? 'popup_open' : ''} onClose={closeAllPopups}>
-                    <form className="popup__form popup__form_avatar" name="avatar" onSubmit={submitHandler} noValidate>
+                    <form className="popup__form popup__form_avatar" name="avatar" onSubmit={submitHandlerAvatar} noValidate>
                         <label className="popup__field">
                             <input type="url" className="popup__input popup__input_type_avatar" id="inputAvatar" name="avatar" placeholder="Image URL" required />
                             <span className="input-avatar-error"></span>
