@@ -5,7 +5,15 @@ import Card from './Card.js';
 import PopupWithForm from './PopupWIthForm.js';
 import PopupWithImage from './PopupWithImage.js';
 import api from '../utils/api.js';
+import FormValidator from '../utils/FormValidator.js';
 import { useState } from 'react';
+import { 
+    config,
+    profileName,
+    profileAbout, 
+    profileNameInput,
+    profileAboutInput
+} from '../utils/constants.js';
 
 //** This the main file of the application.  */
 function App() {
@@ -14,7 +22,26 @@ function App() {
     const [isEditAvatarPopupOpen, setStateEditAvatarPopupOpen] = useState(false);
     const [isAddPlacePopupOpen, setStateAddPlacePopupOpen] = useState(false);
     const [isDeleteCardPopupOpen, setStateDeleteCardPopupOpen] = useState(false);
-    const [isImagePopupOpen, setStateImagePopupOpen] = useState(false)
+    const [isImagePopupOpen, setStateImagePopupOpen] = useState(false);
+    const [selectedCard, setSelectedCard] = useState({})
+    
+    // Enable validation
+    const formValidators = {};
+    const enableValidation = (config) => {
+        const formList = Array.from(document.querySelectorAll(config.formSelector))
+        formList.forEach((formElement) => {
+            const validator = new FormValidator(config, formElement)
+            // Create the name of the form
+            const formName = formElement.getAttribute('name')
+        
+            // Store a validator by the `name` of the form
+            formValidators[formName] = validator;
+            validator.enableValidation();
+        });
+    };
+    enableValidation(config);
+    
+    
     
     function closeAllPopups() {
         setStateEditProfilePopupOpen(false);
@@ -28,6 +55,7 @@ function App() {
 
     function handleEscClose(evt) {
         if (evt.key === "Escape") {
+            console.log(evt);
             closeAllPopups();
         }
     }
@@ -47,11 +75,9 @@ function App() {
         return inputsValues
     }
     
-    const [selectedCard, setSelectedCard] = useState({})
-
     function handleImageClick(card) {
-        // console.log("Card was clicked!", card.target);
-        setSelectedCard({name: card.target.alt, link: card.target.src})
+        // console.log("Card was clicked!", card);
+        setSelectedCard(card)
         setStateImagePopupOpen(true);
         document.addEventListener("keyup", handleEscClose);
         document.addEventListener("mouseup", handleClosePopupwWithOverlay);
@@ -62,16 +88,18 @@ function App() {
         setStateEditProfilePopupOpen(true);
         document.addEventListener("keyup", handleEscClose);
         document.addEventListener("mouseup", handleClosePopupwWithOverlay);
+        profileNameInput.value = profileName.textContent;
+        profileAboutInput.value = profileAbout.textContent;
     }
 
-    const submitHandlerEditProfile = (e) => {
-        e.preventDefault();
-        const profileData = getInputsValues(e.target);
+    const submitHandlerEditProfile = (form) => {
+        form.preventDefault();
+        const profileData = getInputsValues(form.target);
         api.setUserInfo(profileData)
-            .then((res) => {
-                console.log("Response", res);
-                document.querySelector(".profile__name").textContent = res.name;
-                document.querySelector(".profile__description").textContent = res.about;
+            .then((formContent) => {
+                console.log("Response", formContent);
+                profileName.textContent = formContent.name;
+                profileAbout.textContent = formContent.about;
             })
             .catch(err => 
                 console.log("Error:", err)
@@ -86,60 +114,87 @@ function App() {
         document.addEventListener("mouseup", handleClosePopupwWithOverlay);
     }
 
-    const submitHandlerAvatar = (e) => {
-        e.preventDefault();
-        console.log("Submitted!!!", e.target);
-        const newAvatar = getInputsValues(e.target);
+    const submitHandlerAvatar = (form) => {
+        form.preventDefault();
+        // console.log("Submitted!!!", form.target);
+        const newAvatar = getInputsValues(form.target);
         console.log(newAvatar);
         api.changeAvatar(newAvatar)
-            .then((res) => {
-                console.log("Response:", res);
-                document.querySelector(".profile__avatar-picture").src = res.avatar;
+            .then((formContent) => {
+                console.log("Response:", formContent);
+                document.querySelector(".profile__avatar-picture").src = formContent.avatar;
             })
             .catch(err => 
                 console.log("Error:", err)
             );
+        
         closeAllPopups()
+    }
+
+    function handleLikeCard(cardId, userId, likesArray, props) {
+        console.log("Card liked!!!", cardId, userId, likesArray)
+        console.log(props.card.likes);
+        if (!likesArray.find(user => user._id === userId)) {
+            api.likeCard(cardId)
+                .then((res) => {
+                    console.log("Response (added like for card):", res.likes);
+
+                })
+        } else {
+            api.dislikeCard(cardId)
+                .then((res) => {
+                    console.log("Response (removed like from card):", res.likes);
+                })
+        }
+        
+    }
+
+    function handleDeleteCard(card) {
+        setStateDeleteCardPopupOpen(true);
+        setSelectedCard(card)
+        document.addEventListener("keyup", handleEscClose);
+        document.addEventListener("mouseup", handleClosePopupwWithOverlay);
+
+    }
+
+    const submitDeleteCard = (form) => {
+        form.preventDefault();
+        console.log(form);
+        api.deleteCard(selectedCard._id)
+            .then((res) => {
+                console.log("Card deleted!!!", res)
+            })
+        closeAllPopups();
     }
 
     /** Methods for adding new card. */
 
     function handleAddPlaceClick() {
-        console.log("Open popup for add card.");
         setStateAddPlacePopupOpen(true);
         document.addEventListener("keyup", handleEscClose);
         document.addEventListener("mouseup", handleClosePopupwWithOverlay);
     }
 
-    function handleDeleteCard(card) {
-        console.log("Card deleted!!!", card)
-        
-
-    }
-
-    function handleLikeCard(Card) {
-        console.log("Card liked!!!", Card.props)
-        
-    }
-
-    const submitHandlerAddCard = (e) => {
-        e.preventDefault();
-        console.log("Submitted!!!", e.target);
-        const newCard = getInputsValues(e.target);
+    const submitHandlerAddCard = (form) => {
+        form.preventDefault();
+        console.log("Submitted!!!", form.target);
+        const newCard = getInputsValues(form.target);
         console.log(newCard);
         api.createCard(newCard)
             .then((res) => {
                 console.log("Response:", res);
                 <Card 
                     card={res} 
-                    key={res._id}
+                    key={res._id} 
                     id={res._id} 
                     userId={res.owner._id} 
                     name={res.name}
                     link={res.link}
-                    onCardClick={handleImageClick}  
+                    onCardClick={handleImageClick}
+                    deleteCard={handleDeleteCard}
+                    likeCard={handleLikeCard}
                 />
-                console.log("Card", Card);
+                console.log("Response", res);
                 document.querySelector(".cards__container").prepend(newCard);
             })
             .catch(err => 
@@ -188,7 +243,7 @@ function App() {
                             <span className="input-name-error"></span>
                         </label>
                         <label className="popup__field">
-                            <input type="text" className="popup__input popup__input_content_description" id="inputAbout" name="about" placeholder="Describe your role" minLength="2" maxLength="200" required />
+                            <input type="text" className="popup__input popup__input_content_description" id="input-about" name="about" placeholder="Describe your role" minLength="2" maxLength="200" required />
                             <span className="input-about-error"></span>
                         </label>
                         <button className="popup__submit-button popup__submit-button_profile" type="submit">Save</button>
@@ -196,7 +251,7 @@ function App() {
                 </PopupWithForm>
 
                 <PopupWithForm name='add-card' title='New Place' isOpen={isAddPlacePopupOpen ? 'popup_open' : ''} onClose={closeAllPopups}>
-                    <form className="popup__form popup__form_addCard" name="add-place" onSubmit={submitHandlerAddCard} noValidate>
+                    <form className="popup__form popup__form_add-card" name="add-card" onSubmit={submitHandlerAddCard} noValidate>
                         <label className="popup__field">
                             <input type="text" className="popup__input popup__input_type_title" id="input-title" name="name" placeholder="Title" minLength="1" maxLength="30" required />
                             <span className="input-title-error"></span>
@@ -212,20 +267,17 @@ function App() {
                 <PopupWithForm name='avatar' title='Change Profile Picture' isOpen={isEditAvatarPopupOpen ? 'popup_open' : ''} onClose={closeAllPopups}>
                     <form className="popup__form popup__form_avatar" name="avatar" onSubmit={submitHandlerAvatar} noValidate>
                         <label className="popup__field">
-                            <input type="url" className="popup__input popup__input_type_avatar" id="inputAvatar" name="avatar" placeholder="Image URL" required />
+                            <input type="url" className="popup__input popup__input_type_avatar" id="input-avatar" name="avatar" placeholder="Image URL" required />
                             <span className="input-avatar-error"></span>
                         </label>
                         <button className="popup__submit-button popup__submit-button_avatar" type="submit">Save</button>
                     </form>
                 </PopupWithForm>
 
-                <PopupWithForm name='delete-card' title='Are you Sure?' isOpen={isDeleteCardPopupOpen ? 'popup_open' : ''}>
-                    <div className="popup__container">
-                        <button className="popup__close-button popup__close-button_card" type="button"></button>
-                        <form className="popup__form popup__form_add-card" name="delete-card" onSubmit={submitHandler} noValidate>
-                            <button className="popup__submit-button popup__submit-button_card" type="submit">Yes</button>
-                        </form>
-                    </div>
+                <PopupWithForm name='delete-card' title='Are you Sure?' isOpen={isDeleteCardPopupOpen ? 'popup_open' : ''} onClose={closeAllPopups}>
+                    <form className="popup__form popup__form_delete-card" name="delete-card" onSubmit={submitDeleteCard} noValidate>
+                        <button className="popup__submit-button popup__submit-button_card" type="submit">Yes</button>
+                    </form>
                 </PopupWithForm>
             </div>
         </div>

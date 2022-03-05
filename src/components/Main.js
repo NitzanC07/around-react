@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useImperativeHandle, useState } from 'react';
 import profilePicture from '../images/imageprofile.png';
 import api from '../utils/api.js';
 import Card from './Card.js';
