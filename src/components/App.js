@@ -78,7 +78,7 @@ function App() {
     /** Methods for user details. */
     function handleEditProfileClick() {
         setStateEditProfilePopupOpen(true);
-        console.log(formValidators["edit-profile"]);
+        // console.log(formValidators["edit-profile"]);
         formValidators["edit-profile"].resetValidation();
         document.addEventListener("keyup", handleEscClose);
         document.addEventListener("mouseup", handleClosePopupwWithOverlay);
@@ -104,7 +104,7 @@ function App() {
     /** Methods for cahnging avatar (profile picture) */
     function handleEditAvatarClick() {
         setStateEditAvatarPopupOpen(true);
-        console.log(formValidators["avatar"]);
+        // console.log(formValidators["avatar"]);
         formValidators["avatar"].resetValidation();
         document.addEventListener("keyup", handleEscClose);
         document.addEventListener("mouseup", handleClosePopupwWithOverlay);
@@ -172,8 +172,8 @@ function App() {
     /** Methods for adding new card. */
     function handleAddPlaceClick() {
         setStateAddPlacePopupOpen(true);
-        console.log(formValidators["add-card"]);
-        // formValidators["add-card"].resetValidation();
+        // console.log(formValidators["add-card"]);
+        formValidators["add-card"].resetValidation();
         document.addEventListener("keyup", handleEscClose);
         document.addEventListener("mouseup", handleClosePopupwWithOverlay);
     }

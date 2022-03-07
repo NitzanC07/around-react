@@ -25,7 +25,7 @@ function Main(props) {
             console.log(err);
         });
         // console.log("userData ---1", userName);
-    }, []);
+    });
 
     useEffect(() => {
         Promise.all([api.getInitialCards()])
@@ -36,7 +36,7 @@ function Main(props) {
             console.log(err);
         });
         // console.log("Cards ---2", cards);    
-    }, []);
+    });
 
     
     
