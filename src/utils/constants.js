@@ -7,7 +7,9 @@ export const config = {
     formSelector: ".popup__form"
   };
 
-  export const profileName = document.querySelector(".profile__name");
-  export const profileAbout = document.querySelector(".profile__description");
-  export const profileNameInput = document.querySelector(".popup__input_content_name");
-  export const profileAboutInput = document.querySelector(".popup__input_content_description");
+  // export const profileName = document.querySelector(".profile__name");
+  // export const profileAbout = document.querySelector(".profile__description");
+  // export const profileNameInput = document.querySelector(".popup__input_content_name");
+  // export const profileAboutInput = document.querySelector(".popup__input_content_description");
+
+  

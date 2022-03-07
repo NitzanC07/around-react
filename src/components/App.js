@@ -6,14 +6,8 @@ import PopupWithForm from './PopupWIthForm.js';
 import PopupWithImage from './PopupWithImage.js';
 import api from '../utils/api.js';
 import FormValidator from '../utils/FormValidator.js';
-import { useState } from 'react';
-import { 
-    config,
-    profileName,
-    profileAbout, 
-    profileNameInput,
-    profileAboutInput
-} from '../utils/constants.js';
+import React, { useState, useEffect } from 'react';
+import { config } from '../utils/constants.js';
 
 //** This the main file of the application.  */
 function App() {
@@ -24,9 +18,9 @@ function App() {
     const [isDeleteCardPopupOpen, setStateDeleteCardPopupOpen] = useState(false);
     const [isImagePopupOpen, setStateImagePopupOpen] = useState(false);
     const [selectedCard, setSelectedCard] = useState({})
-    
+        
     // Enable validation
-    const formValidators = {};
+    const formValidators = {}
     const enableValidation = (config) => {
         const formList = Array.from(document.querySelectorAll(config.formSelector))
         formList.forEach((formElement) => {
@@ -35,13 +29,11 @@ function App() {
             const formName = formElement.getAttribute('name')
         
             // Store a validator by the `name` of the form
-            formValidators[formName] = validator;
+            formValidators[formName] = validator
             validator.enableValidation();
         });
     };
     enableValidation(config);
-    
-    
     
     function closeAllPopups() {
         setStateEditProfilePopupOpen(false);
@@ -86,10 +78,12 @@ function App() {
     /** Methods for user details. */
     function handleEditProfileClick() {
         setStateEditProfilePopupOpen(true);
+        console.log(formValidators["edit-profile"]);
+        formValidators["edit-profile"].resetValidation();
         document.addEventListener("keyup", handleEscClose);
         document.addEventListener("mouseup", handleClosePopupwWithOverlay);
-        profileNameInput.value = profileName.textContent;
-        profileAboutInput.value = profileAbout.textContent;
+        document.querySelector(".popup__input_content_name").value = document.querySelector(".profile__name").textContent;
+        document.querySelector(".popup__input_content_description").value = document.querySelector(".profile__description").textContent;
     }
 
     const submitHandlerEditProfile = (form) => {
@@ -98,8 +92,8 @@ function App() {
         api.setUserInfo(profileData)
             .then((formContent) => {
                 console.log("Response", formContent);
-                profileName.textContent = formContent.name;
-                profileAbout.textContent = formContent.about;
+                // document.querySelector(".popup__input_content_name").textContent = formContent.name;
+                // document.querySelector(".popup__input_content_description").textContent = formContent.about;
             })
             .catch(err => 
                 console.log("Error:", err)
@@ -110,6 +104,8 @@ function App() {
     /** Methods for cahnging avatar (profile picture) */
     function handleEditAvatarClick() {
         setStateEditAvatarPopupOpen(true);
+        console.log(formValidators["avatar"]);
+        formValidators["avatar"].resetValidation();
         document.addEventListener("keyup", handleEscClose);
         document.addEventListener("mouseup", handleClosePopupwWithOverlay);
     }
@@ -120,33 +116,37 @@ function App() {
         const newAvatar = getInputsValues(form.target);
         console.log(newAvatar);
         api.changeAvatar(newAvatar)
-            .then((formContent) => {
-                console.log("Response:", formContent);
-                document.querySelector(".profile__avatar-picture").src = formContent.avatar;
+        .then((formContent) => {
+            console.log("Response:", formContent);
+            // document.querySelector(".profile__avatar-picture").src = formContent.avatar;
+        })
+        .catch(err => 
+            console.log("Error:", err)
+        );
+        closeAllPopups()
+    }
+
+    function HandleLikeCard(cardId, userId, likesArray, props) {
+        console.log(props.card.likes);
+        if (!likesArray.find(user => user._id === userId)) {
+            console.log("Card liked!!!", cardId, userId, likesArray)
+            api.likeCard(cardId)
+                .then((res) => {
+                    console.log("Response (added like for card):", res.likes);
+                })
+                .catch(err => 
+                    console.log("Error:", err)
+                );
+        } else {
+            console.log("Card disliked!!!", cardId, userId, likesArray)
+            api.dislikeCard(cardId)
+            .then((res) => {
+                console.log("Response (removed like from card):", res.likes);
             })
             .catch(err => 
                 console.log("Error:", err)
             );
-        
-        closeAllPopups()
-    }
-
-    function handleLikeCard(cardId, userId, likesArray, props) {
-        console.log("Card liked!!!", cardId, userId, likesArray)
-        console.log(props.card.likes);
-        if (!likesArray.find(user => user._id === userId)) {
-            api.likeCard(cardId)
-                .then((res) => {
-                    console.log("Response (added like for card):", res.likes);
-
-                })
-        } else {
-            api.dislikeCard(cardId)
-                .then((res) => {
-                    console.log("Response (removed like from card):", res.likes);
-                })
         }
-        
     }
 
     function handleDeleteCard(card) {
@@ -154,23 +154,26 @@ function App() {
         setSelectedCard(card)
         document.addEventListener("keyup", handleEscClose);
         document.addEventListener("mouseup", handleClosePopupwWithOverlay);
-
     }
 
     const submitDeleteCard = (form) => {
         form.preventDefault();
-        console.log(form);
         api.deleteCard(selectedCard._id)
             .then((res) => {
                 console.log("Card deleted!!!", res)
+                console.log(selectedCard);
             })
+            .catch(err => 
+                console.log("Error:", err)
+            );
         closeAllPopups();
     }
-
+    
     /** Methods for adding new card. */
-
     function handleAddPlaceClick() {
         setStateAddPlacePopupOpen(true);
+        console.log(formValidators["add-card"]);
+        // formValidators["add-card"].resetValidation();
         document.addEventListener("keyup", handleEscClose);
         document.addEventListener("mouseup", handleClosePopupwWithOverlay);
     }
@@ -192,23 +195,16 @@ function App() {
                     link={res.link}
                     onCardClick={handleImageClick}
                     deleteCard={handleDeleteCard}
-                    likeCard={handleLikeCard}
+                    likeCard={HandleLikeCard}
                 />
                 console.log("Response", res);
-                document.querySelector(".cards__container").prepend(newCard);
+                // document.querySelector(".cards__container").prepend(newCard);
             })
             .catch(err => 
                 console.log("Error:", err)
             );
         closeAllPopups()
-    }
-
-    const submitHandler = (e) => {
-        e.preventDefault();
-        console.log("Submitted!!!", e.target);
-
-        closeAllPopups()
-    }
+    }   
 
     return (
         <div className="page">
@@ -225,7 +221,7 @@ function App() {
                     onCardClick={handleImageClick}
                     isImagePopupOpen={isImagePopupOpen}
                     deleteCard={handleDeleteCard}
-                    likeCard={handleLikeCard}
+                    likeCard={HandleLikeCard}
                     />
                 <Footer />
 

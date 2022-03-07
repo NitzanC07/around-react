@@ -1,4 +1,4 @@
-import React, { useImperativeHandle, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import profilePicture from '../images/imageprofile.png';
 import api from '../utils/api.js';
 import Card from './Card.js';
@@ -13,19 +13,33 @@ function Main(props) {
     const [userId, setUserId] = useState();
     const [cards, setCards] = useState([]);
 
-    React.useEffect(() => {
-        Promise.all([api.getUserInfo(), api.getInitialCards()])
-        .then(([userData, cardsData]) => {
-            setUserId(userData._id)
-            setUserAvatar(userData.avatar)
+    useEffect(() => {
+        Promise.all([api.getUserInfo()])
+        .then(([userData]) => {
             setUserName(userData.name)
             setUserDescription(userData.about)
+            setUserAvatar(userData.avatar)
+            setUserId(userData._id)
+        })
+        .catch(err => {
+            console.log(err);
+        });
+        // console.log("userData ---1", userName);
+    }, []);
+
+    useEffect(() => {
+        Promise.all([api.getInitialCards()])
+        .then(([cardsData]) => {
             setCards(cardsData)
         })
         .catch(err => {
             console.log(err);
         });
-    }, [])
+        // console.log("Cards ---2", cards);    
+    }, []);
+
+    
+    
 
     return(
         <main className="main-content">
