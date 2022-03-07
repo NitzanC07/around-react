@@ -3,7 +3,7 @@ import Main from './Main.js';
 import Footer from './Footer.js';
 import Card from './Card.js';
 import PopupWithForm from './PopupWIthForm.js';
-import PopupWithImage from './PopupWithImage.js';
+import ImagePopup from './ImagePopup.js';
 import api from '../utils/api.js';
 import FormValidator from '../utils/FormValidator.js';
 import React, { useState, useEffect } from 'react';
@@ -225,11 +225,11 @@ function App() {
                     />
                 <Footer />
 
-                <PopupWithImage 
+                <ImagePopup 
                     className="popup popup_type_image" 
                     isOpen={isImagePopupOpen ? 'popup_open' : ''} 
                     onClose={closeAllPopups} 
-                    cardData={selectedCard}
+                    selectedCard={selectedCard}
                 />
 
                 <PopupWithForm name='edit-profile' title='Edit Profile' isOpen={isEditProfilePopupOpen ? 'popup_open' : ''} onClose={closeAllPopups}>
