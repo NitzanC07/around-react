@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/around-react.git/static/css/main.03bf1a4b.css",
-    "main.js": "/around-react.git/static/js/main.508e1e12.js",
+    "main.js": "/around-react.git/static/js/main.c78ee5cd.js",
     "static/js/787.1c78f32b.chunk.js": "/around-react.git/static/js/787.1c78f32b.chunk.js",
     "static/media/Inter-Medium.woff": "/around-react.git/static/media/Inter-Medium.7ddb89dcdb33dd761944.woff",
     "static/media/Inter-Medium.woff2": "/around-react.git/static/media/Inter-Medium.6db7e439cc4b0e5c0cd2.woff2",
@@ -18,11 +18,11 @@
     "static/media/edit-button-icon.svg": "/around-react.git/static/media/edit-button-icon.6c7bf05444b9793fdf6e.svg",
     "static/media/plus-icon.svg": "/around-react.git/static/media/plus-icon.bed8c136e13907f5eefb.svg",
     "main.03bf1a4b.css.map": "/around-react.git/static/css/main.03bf1a4b.css.map",
-    "main.508e1e12.js.map": "/around-react.git/static/js/main.508e1e12.js.map",
+    "main.c78ee5cd.js.map": "/around-react.git/static/js/main.c78ee5cd.js.map",
     "787.1c78f32b.chunk.js.map": "/around-react.git/static/js/787.1c78f32b.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.03bf1a4b.css",
-    "static/js/main.508e1e12.js"
+    "static/js/main.c78ee5cd.js"
   ]
 }
