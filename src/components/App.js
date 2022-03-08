@@ -24,56 +24,27 @@ function App() {
         setStateDeleteCardPopupOpen(false);
         setStateImagePopupOpen(false);
     }
-
-    function getInputsValues(specificForm) {
-        const inputsValues = {};
-        const inputs = Array.from(specificForm.querySelectorAll(".popup__input"))
-        inputs.forEach(input => {
-            inputsValues[input.name] = input.value;
-        })
-        return inputsValues
-    }
     
+    function handleEditAvatarClick() {
+        setStateEditAvatarPopupOpen(true);
+    }
+
+    function handleEditProfileClick() {
+        setStateEditProfilePopupOpen(true);
+    }
+
+    function handleAddPlaceClick() {
+        setStateAddPlacePopupOpen(true);
+    }
+
     function handleImageClick(card) {
         setSelectedCard(card)
         setStateImagePopupOpen(true);
     }
 
-    /** Methods for user details. */
-    function handleEditProfileClick() {
-        setStateEditProfilePopupOpen(true);
-    }
-
-    const submitHandlerEditProfile = (form) => {
-        form.preventDefault();
-        const profileData = getInputsValues(form.target);
-        api.setUserInfo(profileData)
-            .then((formContent) => {
-                console.log("Response", formContent);
-            })
-            .catch(err => 
-                console.log("Error:", err)
-            );
-        closeAllPopups();
-    }
-
-    /** Methods for cahnging avatar (profile picture) */
-    function handleEditAvatarClick() {
-        setStateEditAvatarPopupOpen(true);
-    }
-
-    const submitHandlerAvatar = (form) => {
-        form.preventDefault();
-        const newAvatar = getInputsValues(form.target);
-        console.log(newAvatar);
-        api.changeAvatar(newAvatar)
-        .then((formContent) => {
-            console.log("Response:", formContent);
-        })
-        .catch(err => 
-            console.log("Error:", err)
-        );
-        closeAllPopups()
+    function handleDeleteCard(card) {
+        setStateDeleteCardPopupOpen(true);
+        setSelectedCard(card)
     }
 
     function HandleLikeCard(cardId, userId, likesArray, props) {
@@ -99,55 +70,33 @@ function App() {
         }
     }
 
-    function handleDeleteCard(card) {
-        setStateDeleteCardPopupOpen(true);
-        setSelectedCard(card)
-    }
+    useEffect(() => {
+        const closeByEscape = (evt) => {
+            if (evt.key === 'Escape') {
+                // props.onclose();
+                closeAllPopups();
+            }
+        }
+        document.addEventListener('keyup', closeByEscape)
+        return () => document.removeEventListener('keyup', closeByEscape)
+    }, [])
 
-    const submitHandlerDeleteCard = (form) => {
-        form.preventDefault();
-        api.deleteCard(selectedCard._id)
-            .then((res) => {
-                console.log("Card deleted!!!", res)
-                console.log(selectedCard);
-            })
-            .catch(err => 
-                console.log("Error:", err)
-            );
+    useEffect(() => {
+        const closeByOverlay = (evt) => {
+            if(evt.target.classList.contains('popup_open')) {
+                // props.onClose();
+                closeAllPopups();
+            }
+        }
+        document.addEventListener('mouseup', closeByOverlay)
+        return () => document.removeEventListener('mouseup', closeByOverlay)
+    }, [])
+
+    function submitHandler(e) {
+        e.preventDefault();
+        console.log("Submited.");
         closeAllPopups();
     }
-    
-    /** Methods for adding new card. */
-    function handleAddPlaceClick() {
-        setStateAddPlacePopupOpen(true);
-    }
-
-    const submitHandlerAddCard = (form) => {
-        form.preventDefault();
-        console.log("Submitted!!!", form.target);
-        const newCard = getInputsValues(form.target);
-        console.log(newCard);
-        api.createCard(newCard)
-            .then((res) => {
-                console.log("Response:", res);
-                <Card 
-                    card={res} 
-                    key={res._id} 
-                    id={res._id} 
-                    userId={res.owner._id} 
-                    name={res.name}
-                    link={res.link}
-                    onCardClick={handleImageClick}
-                    deleteCard={handleDeleteCard}
-                    likeCard={HandleLikeCard}
-                />
-                console.log("Response", res);
-            })
-            .catch(err => 
-                console.log("Error:", err)
-            );
-        closeAllPopups()
-    }   
 
     return (
         <div className="page">
@@ -156,12 +105,12 @@ function App() {
                 <Header />
                 <Main 
                     onEditProfileClick={handleEditProfileClick}
-                    isEditProfilePopupOpen={isEditProfilePopupOpen}
                     onAddPlaceClick={handleAddPlaceClick}
-                    isAddPlacePopupOpen={isAddPlacePopupOpen}
                     onEditAvatarClick={handleEditAvatarClick}
-                    isEditAvatarPopupOpen={isEditAvatarPopupOpen}
                     onCardClick={handleImageClick}
+                    isEditProfilePopupOpen={isEditProfilePopupOpen}
+                    isAddPlacePopupOpen={isAddPlacePopupOpen}
+                    isEditAvatarPopupOpen={isEditAvatarPopupOpen}
                     isImagePopupOpen={isImagePopupOpen}
                     deleteCard={handleDeleteCard}
                     likeCard={HandleLikeCard}
@@ -181,7 +130,7 @@ function App() {
                     isOpen={isEditProfilePopupOpen ? 'popup_open' : ''} 
                     onClose={closeAllPopups} 
                     buttonText="Save" 
-                    submitHandler={submitHandlerEditProfile}
+                    onSubmit={submitHandler}
                 >
                     <label className="popup__field">
                         <input 
@@ -217,7 +166,7 @@ function App() {
                     isOpen={isAddPlacePopupOpen ? 'popup_open' : ''} 
                     onClose={closeAllPopups} 
                     buttonText="Save" 
-                    submitHandler={submitHandlerAddCard}
+                    onSubmit={submitHandler}
                 >
                     <label className="popup__field">
                         <input 
@@ -251,7 +200,7 @@ function App() {
                     isOpen={isEditAvatarPopupOpen ? 'popup_open' : ''} 
                     onClose={closeAllPopups} 
                     buttonText="Save" 
-                    submitHandler={submitHandlerAvatar}
+                    onSubmit={submitHandler}
                 >
                     <label className="popup__field">
                         <input 
@@ -272,7 +221,7 @@ function App() {
                     isOpen={isDeleteCardPopupOpen ? 'popup_open' : ''} 
                     onClose={closeAllPopups} 
                     buttonText="Yes" 
-                    submitHandler={submitHandlerDeleteCard} 
+                    onSubmit={submitHandler}
                 />
             </div>
         </div>
