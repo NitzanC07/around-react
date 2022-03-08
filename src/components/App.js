@@ -5,9 +5,7 @@ import Card from './Card.js';
 import PopupWithForm from './PopupWIthForm.js';
 import ImagePopup from './ImagePopup.js';
 import api from '../utils/api.js';
-import FormValidator from '../utils/FormValidator.js';
 import React, { useState, useEffect } from 'react';
-import { config } from '../utils/constants.js';
 
 //** This the main file of the application.  */
 function App() {
@@ -19,43 +17,12 @@ function App() {
     const [isImagePopupOpen, setStateImagePopupOpen] = useState(false);
     const [selectedCard, setSelectedCard] = useState({})
         
-    // Enable validation
-    const formValidators = {}
-    const enableValidation = (config) => {
-        const formList = Array.from(document.querySelectorAll(config.formSelector))
-        formList.forEach((formElement) => {
-            const validator = new FormValidator(config, formElement)
-            // Create the name of the form
-            const formName = formElement.getAttribute('name')
-        
-            // Store a validator by the `name` of the form
-            formValidators[formName] = validator
-            validator.enableValidation();
-        });
-    };
-    enableValidation(config);
-    
     function closeAllPopups() {
         setStateEditProfilePopupOpen(false);
         setStateEditAvatarPopupOpen(false);
         setStateAddPlacePopupOpen(false);
         setStateDeleteCardPopupOpen(false);
         setStateImagePopupOpen(false);
-        document.removeEventListener("keyup", handleEscClose);
-        document.removeEventListener("mouseup", handleClosePopupwWithOverlay);
-    }
-
-    function handleEscClose(evt) {
-        if (evt.key === "Escape") {
-            console.log(evt);
-            closeAllPopups();
-        }
-    }
-
-    function handleClosePopupwWithOverlay(evt) {
-        if (evt.target.classList.contains("popup_open")) {
-            closeAllPopups();
-        }
     }
 
     function getInputsValues(specificForm) {
@@ -68,22 +35,13 @@ function App() {
     }
     
     function handleImageClick(card) {
-        // console.log("Card was clicked!", card);
         setSelectedCard(card)
         setStateImagePopupOpen(true);
-        document.addEventListener("keyup", handleEscClose);
-        document.addEventListener("mouseup", handleClosePopupwWithOverlay);
     }
 
     /** Methods for user details. */
     function handleEditProfileClick() {
         setStateEditProfilePopupOpen(true);
-        // console.log(formValidators["edit-profile"]);
-        formValidators["edit-profile"].resetValidation();
-        document.addEventListener("keyup", handleEscClose);
-        document.addEventListener("mouseup", handleClosePopupwWithOverlay);
-        document.querySelector(".popup__input_content_name").value = document.querySelector(".profile__name").textContent;
-        document.querySelector(".popup__input_content_description").value = document.querySelector(".profile__description").textContent;
     }
 
     const submitHandlerEditProfile = (form) => {
@@ -92,8 +50,6 @@ function App() {
         api.setUserInfo(profileData)
             .then((formContent) => {
                 console.log("Response", formContent);
-                // document.querySelector(".popup__input_content_name").textContent = formContent.name;
-                // document.querySelector(".popup__input_content_description").textContent = formContent.about;
             })
             .catch(err => 
                 console.log("Error:", err)
@@ -104,21 +60,15 @@ function App() {
     /** Methods for cahnging avatar (profile picture) */
     function handleEditAvatarClick() {
         setStateEditAvatarPopupOpen(true);
-        // console.log(formValidators["avatar"]);
-        formValidators["avatar"].resetValidation();
-        document.addEventListener("keyup", handleEscClose);
-        document.addEventListener("mouseup", handleClosePopupwWithOverlay);
     }
 
     const submitHandlerAvatar = (form) => {
         form.preventDefault();
-        // console.log("Submitted!!!", form.target);
         const newAvatar = getInputsValues(form.target);
         console.log(newAvatar);
         api.changeAvatar(newAvatar)
         .then((formContent) => {
             console.log("Response:", formContent);
-            // document.querySelector(".profile__avatar-picture").src = formContent.avatar;
         })
         .catch(err => 
             console.log("Error:", err)
@@ -152,11 +102,9 @@ function App() {
     function handleDeleteCard(card) {
         setStateDeleteCardPopupOpen(true);
         setSelectedCard(card)
-        document.addEventListener("keyup", handleEscClose);
-        document.addEventListener("mouseup", handleClosePopupwWithOverlay);
     }
 
-    const submitDeleteCard = (form) => {
+    const submitHandlerDeleteCard = (form) => {
         form.preventDefault();
         api.deleteCard(selectedCard._id)
             .then((res) => {
@@ -172,10 +120,6 @@ function App() {
     /** Methods for adding new card. */
     function handleAddPlaceClick() {
         setStateAddPlacePopupOpen(true);
-        // console.log(formValidators["add-card"]);
-        formValidators["add-card"].resetValidation();
-        document.addEventListener("keyup", handleEscClose);
-        document.addEventListener("mouseup", handleClosePopupwWithOverlay);
     }
 
     const submitHandlerAddCard = (form) => {
@@ -198,7 +142,6 @@ function App() {
                     likeCard={HandleLikeCard}
                 />
                 console.log("Response", res);
-                // document.querySelector(".cards__container").prepend(newCard);
             })
             .catch(err => 
                 console.log("Error:", err)
@@ -232,49 +175,105 @@ function App() {
                     selectedCard={selectedCard}
                 />
 
-                <PopupWithForm name='edit-profile' title='Edit Profile' isOpen={isEditProfilePopupOpen ? 'popup_open' : ''} onClose={closeAllPopups}>
-                    <form className="popup__form popup__form_profile" name="edit-profile" onSubmit={submitHandlerEditProfile} noValidate>
-                        <label className="popup__field">
-                            <input type="text" className="popup__input popup__input_content_name" id="input-name" name="name" placeholder="What is your name" minLength="2" maxLength="40" required />
-                            <span className="input-name-error"></span>
-                        </label>
-                        <label className="popup__field">
-                            <input type="text" className="popup__input popup__input_content_description" id="input-about" name="about" placeholder="Describe your role" minLength="2" maxLength="200" required />
-                            <span className="input-about-error"></span>
-                        </label>
-                        <button className="popup__submit-button popup__submit-button_profile" type="submit">Save</button>
-                    </form>
+                <PopupWithForm 
+                    name='edit-profile' 
+                    title='Edit Profile' 
+                    isOpen={isEditProfilePopupOpen ? 'popup_open' : ''} 
+                    onClose={closeAllPopups} 
+                    buttonText="Save" 
+                    submitHandler={submitHandlerEditProfile}
+                >
+                    <label className="popup__field">
+                        <input 
+                            type="text" 
+                            className="popup__input popup__input_content_name" 
+                            id="input-name" 
+                            name="name" 
+                            placeholder="What is your name" 
+                            minLength="2" 
+                            maxLength="40" 
+                            required 
+                        />
+                        <span className="input-name-error"></span>
+                    </label>
+                    <label className="popup__field">
+                        <input 
+                            type="text" 
+                            className="popup__input popup__input_content_description" 
+                            id="input-about" 
+                            name="about" 
+                            placeholder="Describe your role" 
+                            minLength="2" 
+                            maxLength="200" 
+                            required 
+                        />
+                        <span className="input-about-error"></span>
+                    </label>
                 </PopupWithForm>
 
-                <PopupWithForm name='add-card' title='New Place' isOpen={isAddPlacePopupOpen ? 'popup_open' : ''} onClose={closeAllPopups}>
-                    <form className="popup__form popup__form_add-card" name="add-card" onSubmit={submitHandlerAddCard} noValidate>
-                        <label className="popup__field">
-                            <input type="text" className="popup__input popup__input_type_title" id="input-title" name="name" placeholder="Title" minLength="1" maxLength="30" required />
-                            <span className="input-title-error"></span>
-                        </label>
-                        <label className="popup__field">
-                            <input type="url" className="popup__input popup__input_type_image" id="input-image" name="link" placeholder="Image URL" required />
-                            <span className="input-image-error"></span>
-                        </label>
-                        <button className="popup__submit-button popup__submit-button_card" type="submit">Save</button>
-                    </form>
+                <PopupWithForm 
+                    name='add-card' 
+                    title='New Place' 
+                    isOpen={isAddPlacePopupOpen ? 'popup_open' : ''} 
+                    onClose={closeAllPopups} 
+                    buttonText="Save" 
+                    submitHandler={submitHandlerAddCard}
+                >
+                    <label className="popup__field">
+                        <input 
+                            type="text" 
+                            className="popup__input popup__input_type_title" 
+                            id="input-title" 
+                            name="name" 
+                            placeholder="Title" 
+                            minLength="1" 
+                            maxLength="30" 
+                            required 
+                        />
+                        <span className="input-title-error"></span>
+                    </label>
+                    <label className="popup__field">
+                        <input 
+                            type="url" 
+                            className="popup__input popup__input_type_image" 
+                            id="input-image" 
+                            name="link" 
+                            placeholder="Image URL" 
+                            required 
+                        />
+                        <span className="input-image-error"></span>
+                    </label>
                 </PopupWithForm>
 
-                <PopupWithForm name='avatar' title='Change Profile Picture' isOpen={isEditAvatarPopupOpen ? 'popup_open' : ''} onClose={closeAllPopups}>
-                    <form className="popup__form popup__form_avatar" name="avatar" onSubmit={submitHandlerAvatar} noValidate>
-                        <label className="popup__field">
-                            <input type="url" className="popup__input popup__input_type_avatar" id="input-avatar" name="avatar" placeholder="Image URL" required />
-                            <span className="input-avatar-error"></span>
-                        </label>
-                        <button className="popup__submit-button popup__submit-button_avatar" type="submit">Save</button>
-                    </form>
+                <PopupWithForm 
+                    name='avatar' 
+                    title='Change Profile Picture' 
+                    isOpen={isEditAvatarPopupOpen ? 'popup_open' : ''} 
+                    onClose={closeAllPopups} 
+                    buttonText="Save" 
+                    submitHandler={submitHandlerAvatar}
+                >
+                    <label className="popup__field">
+                        <input 
+                            type="url" 
+                            className="popup__input popup__input_type_avatar" 
+                            id="input-avatar" 
+                            name="avatar" 
+                            placeholder="Image URL" 
+                            required 
+                        />
+                        <span className="input-avatar-error"></span>
+                    </label>
                 </PopupWithForm>
 
-                <PopupWithForm name='delete-card' title='Are you Sure?' isOpen={isDeleteCardPopupOpen ? 'popup_open' : ''} onClose={closeAllPopups}>
-                    <form className="popup__form popup__form_delete-card" name="delete-card" onSubmit={submitDeleteCard} noValidate>
-                        <button className="popup__submit-button popup__submit-button_card" type="submit">Yes</button>
-                    </form>
-                </PopupWithForm>
+                <PopupWithForm 
+                    name='delete-card' 
+                    title='Are you Sure?' 
+                    isOpen={isDeleteCardPopupOpen ? 'popup_open' : ''} 
+                    onClose={closeAllPopups} 
+                    buttonText="Yes" 
+                    submitHandler={submitHandlerDeleteCard} 
+                />
             </div>
         </div>
     );

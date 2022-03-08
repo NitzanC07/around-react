@@ -7,39 +7,26 @@ function Main(props) {
 
     // console.log("Main: ", props);
 
-    const [userName, setUserName] = useState();
-    const [userDescription, setUserDescription] = useState();
-    const [userAvatar, setUserAvatar] = useState();
-    const [userId, setUserId] = useState();
+    const [userName, setUserName] = useState('');
+    const [userDescription, setUserDescription] = useState('');
+    const [userAvatar, setUserAvatar] = useState('');
+    const [userId, setUserId] = useState('');
     const [cards, setCards] = useState([]);
 
     useEffect(() => {
-        Promise.all([api.getUserInfo()])
-        .then(([userData]) => {
+        Promise.all([api.getUserInfo(), api.getInitialCards()])
+        .then(([userData, cardsData]) => {
             setUserName(userData.name)
             setUserDescription(userData.about)
             setUserAvatar(userData.avatar)
             setUserId(userData._id)
-        })
-        .catch(err => {
-            console.log(err);
-        });
-        // console.log("userData ---1", userName);
-    });
-
-    useEffect(() => {
-        Promise.all([api.getInitialCards()])
-        .then(([cardsData]) => {
             setCards(cardsData)
         })
         .catch(err => {
             console.log(err);
         });
-        // console.log("Cards ---2", cards);    
-    });
-
-    
-    
+        // console.log("userData ---1", cards);
+    }, []);
 
     return(
         <main className="main-content">

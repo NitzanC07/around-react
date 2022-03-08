@@ -1,8 +1,17 @@
+import React, { useState, useEffect } from 'react';
 
 function Footer() {
+
+    const [year, setYear] = useState('');
+
+    useEffect(() => {
+        const currentYear = new Date().getFullYear()
+        setYear(currentYear)
+    }, [year])
+
     return(
         <footer className="footer">
-            <p className="footer__copyright">&copy; 2021 Around The U.S.</p>
+            <p className="footer__copyright">&copy; {year} Around The U.S.</p>
         </footer>
     )
 }
