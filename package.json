@@ -1,6 +1,7 @@
 {
   "name": "around-react",
-  "homepage": "https://nitzanc07.github.io/around-react.git",
+  "homepage": "https://nitzanc07.github.io/around-react/",
+  
   "version": "0.1.0",
   "private": true,
   "dependencies": {
