@@ -1,7 +1,7 @@
 {
   "files": {
-    "main.css": "/around-react.git/static/css/main.03bf1a4b.css",
-    "main.js": "/around-react.git/static/js/main.c78ee5cd.js",
+    "main.css": "/around-react.git/static/css/main.f718f360.css",
+    "main.js": "/around-react.git/static/js/main.141f8c44.js",
     "static/js/787.1c78f32b.chunk.js": "/around-react.git/static/js/787.1c78f32b.chunk.js",
     "static/media/Inter-Medium.woff": "/around-react.git/static/media/Inter-Medium.7ddb89dcdb33dd761944.woff",
     "static/media/Inter-Medium.woff2": "/around-react.git/static/media/Inter-Medium.6db7e439cc4b0e5c0cd2.woff2",
@@ -17,12 +17,12 @@
     "static/media/heart-full.svg": "/around-react.git/static/media/heart-full.f8482d28867cec189b08.svg",
     "static/media/edit-button-icon.svg": "/around-react.git/static/media/edit-button-icon.6c7bf05444b9793fdf6e.svg",
     "static/media/plus-icon.svg": "/around-react.git/static/media/plus-icon.bed8c136e13907f5eefb.svg",
-    "main.03bf1a4b.css.map": "/around-react.git/static/css/main.03bf1a4b.css.map",
-    "main.c78ee5cd.js.map": "/around-react.git/static/js/main.c78ee5cd.js.map",
+    "main.f718f360.css.map": "/around-react.git/static/css/main.f718f360.css.map",
+    "main.141f8c44.js.map": "/around-react.git/static/js/main.141f8c44.js.map",
     "787.1c78f32b.chunk.js.map": "/around-react.git/static/js/787.1c78f32b.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.03bf1a4b.css",
-    "static/js/main.c78ee5cd.js"
+    "static/css/main.f718f360.css",
+    "static/js/main.141f8c44.js"
   ]
 }
