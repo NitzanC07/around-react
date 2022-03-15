@@ -73,7 +73,6 @@ function App() {
     useEffect(() => {
         const closeByEscape = (evt) => {
             if (evt.key === 'Escape') {
-                // props.onclose();
                 closeAllPopups();
             }
         }
@@ -84,7 +83,6 @@ function App() {
     useEffect(() => {
         const closeByOverlay = (evt) => {
             if(evt.target.classList.contains('popup_open')) {
-                // props.onClose();
                 closeAllPopups();
             }
         }
