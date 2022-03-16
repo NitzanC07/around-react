@@ -6,9 +6,25 @@ import PopupWithForm from './PopupWIthForm.js';
 import ImagePopup from './ImagePopup.js';
 import api from '../utils/api.js';
 import React, { useState, useEffect } from 'react';
+import { CurrentUserContext } from '../../src/contexts/CurrentUserContext.js';
 
 //** This the main file of the application.  */
 function App() {
+
+    const [currentUser , setCurrentUser ] = useState({});
+    const [cards, setCards] = useState([]);
+
+    useEffect(() => {
+        Promise.all([api.getUserInfo(), api.getInitialCards()])
+        .then(([userData, cardsData]) => {
+            setCurrentUser(userData);
+            setCards(cardsData);
+        })
+        .catch(err => {
+            console.log(err);
+        });
+    }, []);
+    // console.log("currentUser ---1", currentUser);
 
     const [isEditProfilePopupOpen, setStateEditProfilePopupOpen] = useState(false);
     const [isEditAvatarPopupOpen, setStateEditAvatarPopupOpen] = useState(false);
@@ -97,132 +113,133 @@ function App() {
     }
 
     return (
-        <div className="page">
-        
-            <div className="page__container">
-                <Header />
-                <Main 
-                    onEditProfileClick={handleEditProfileClick}
-                    onAddPlaceClick={handleAddPlaceClick}
-                    onEditAvatarClick={handleEditAvatarClick}
-                    onCardClick={handleImageClick}
-                    isEditProfilePopupOpen={isEditProfilePopupOpen}
-                    isAddPlacePopupOpen={isAddPlacePopupOpen}
-                    isEditAvatarPopupOpen={isEditAvatarPopupOpen}
-                    isImagePopupOpen={isImagePopupOpen}
-                    deleteCard={handleDeleteCard}
-                    likeCard={HandleLikeCard}
+        <CurrentUserContext.Provider value={currentUser}>
+            <div className="page">
+                <div className="page__container">
+                    <Header />
+                    <Main 
+                        onEditProfileClick={handleEditProfileClick}
+                        onAddPlaceClick={handleAddPlaceClick}
+                        onEditAvatarClick={handleEditAvatarClick}
+                        onCardClick={handleImageClick}
+                        isEditProfilePopupOpen={isEditProfilePopupOpen}
+                        isAddPlacePopupOpen={isAddPlacePopupOpen}
+                        isEditAvatarPopupOpen={isEditAvatarPopupOpen}
+                        isImagePopupOpen={isImagePopupOpen}
+                        deleteCard={handleDeleteCard}
+                        likeCard={HandleLikeCard}
+                        />
+                    <Footer />
+
+                    <ImagePopup 
+                        className="popup popup_type_image" 
+                        isOpen={isImagePopupOpen ? 'popup_open' : ''} 
+                        onClose={closeAllPopups} 
+                        selectedCard={selectedCard}
                     />
-                <Footer />
 
-                <ImagePopup 
-                    className="popup popup_type_image" 
-                    isOpen={isImagePopupOpen ? 'popup_open' : ''} 
-                    onClose={closeAllPopups} 
-                    selectedCard={selectedCard}
-                />
+                    <PopupWithForm 
+                        name='edit-profile' 
+                        title='Edit Profile' 
+                        isOpen={isEditProfilePopupOpen ? 'popup_open' : ''} 
+                        onClose={closeAllPopups} 
+                        buttonText="Save" 
+                        onSubmit={submitHandler}
+                    >
+                        <label className="popup__field">
+                            <input 
+                                type="text" 
+                                className="popup__input popup__input_content_name" 
+                                id="input-name" 
+                                name="name" 
+                                placeholder="What is your name" 
+                                minLength="2" 
+                                maxLength="40" 
+                                required 
+                            />
+                            <span className="input-name-error"></span>
+                        </label>
+                        <label className="popup__field">
+                            <input 
+                                type="text" 
+                                className="popup__input popup__input_content_description" 
+                                id="input-about" 
+                                name="about" 
+                                placeholder="Describe your role" 
+                                minLength="2" 
+                                maxLength="200" 
+                                required 
+                            />
+                            <span className="input-about-error"></span>
+                        </label>
+                    </PopupWithForm>
 
-                <PopupWithForm 
-                    name='edit-profile' 
-                    title='Edit Profile' 
-                    isOpen={isEditProfilePopupOpen ? 'popup_open' : ''} 
-                    onClose={closeAllPopups} 
-                    buttonText="Save" 
-                    onSubmit={submitHandler}
-                >
-                    <label className="popup__field">
-                        <input 
-                            type="text" 
-                            className="popup__input popup__input_content_name" 
-                            id="input-name" 
-                            name="name" 
-                            placeholder="What is your name" 
-                            minLength="2" 
-                            maxLength="40" 
-                            required 
-                        />
-                        <span className="input-name-error"></span>
-                    </label>
-                    <label className="popup__field">
-                        <input 
-                            type="text" 
-                            className="popup__input popup__input_content_description" 
-                            id="input-about" 
-                            name="about" 
-                            placeholder="Describe your role" 
-                            minLength="2" 
-                            maxLength="200" 
-                            required 
-                        />
-                        <span className="input-about-error"></span>
-                    </label>
-                </PopupWithForm>
+                    <PopupWithForm 
+                        name='add-card' 
+                        title='New Place' 
+                        isOpen={isAddPlacePopupOpen ? 'popup_open' : ''} 
+                        onClose={closeAllPopups} 
+                        buttonText="Save" 
+                        onSubmit={submitHandler}
+                    >
+                        <label className="popup__field">
+                            <input 
+                                type="text" 
+                                className="popup__input popup__input_type_title" 
+                                id="input-title" 
+                                name="name" 
+                                placeholder="Title" 
+                                minLength="1" 
+                                maxLength="30" 
+                                required 
+                            />
+                            <span className="input-title-error"></span>
+                        </label>
+                        <label className="popup__field">
+                            <input 
+                                type="url" 
+                                className="popup__input popup__input_type_image" 
+                                id="input-image" 
+                                name="link" 
+                                placeholder="Image URL" 
+                                required 
+                            />
+                            <span className="input-image-error"></span>
+                        </label>
+                    </PopupWithForm>
 
-                <PopupWithForm 
-                    name='add-card' 
-                    title='New Place' 
-                    isOpen={isAddPlacePopupOpen ? 'popup_open' : ''} 
-                    onClose={closeAllPopups} 
-                    buttonText="Save" 
-                    onSubmit={submitHandler}
-                >
-                    <label className="popup__field">
-                        <input 
-                            type="text" 
-                            className="popup__input popup__input_type_title" 
-                            id="input-title" 
-                            name="name" 
-                            placeholder="Title" 
-                            minLength="1" 
-                            maxLength="30" 
-                            required 
-                        />
-                        <span className="input-title-error"></span>
-                    </label>
-                    <label className="popup__field">
-                        <input 
-                            type="url" 
-                            className="popup__input popup__input_type_image" 
-                            id="input-image" 
-                            name="link" 
-                            placeholder="Image URL" 
-                            required 
-                        />
-                        <span className="input-image-error"></span>
-                    </label>
-                </PopupWithForm>
+                    <PopupWithForm 
+                        name='avatar' 
+                        title='Change Profile Picture' 
+                        isOpen={isEditAvatarPopupOpen ? 'popup_open' : ''} 
+                        onClose={closeAllPopups} 
+                        buttonText="Save" 
+                        onSubmit={submitHandler}
+                    >
+                        <label className="popup__field">
+                            <input 
+                                type="url" 
+                                className="popup__input popup__input_type_avatar" 
+                                id="input-avatar" 
+                                name="avatar" 
+                                placeholder="Image URL" 
+                                required 
+                            />
+                            <span className="input-avatar-error"></span>
+                        </label>
+                    </PopupWithForm>
 
-                <PopupWithForm 
-                    name='avatar' 
-                    title='Change Profile Picture' 
-                    isOpen={isEditAvatarPopupOpen ? 'popup_open' : ''} 
-                    onClose={closeAllPopups} 
-                    buttonText="Save" 
-                    onSubmit={submitHandler}
-                >
-                    <label className="popup__field">
-                        <input 
-                            type="url" 
-                            className="popup__input popup__input_type_avatar" 
-                            id="input-avatar" 
-                            name="avatar" 
-                            placeholder="Image URL" 
-                            required 
-                        />
-                        <span className="input-avatar-error"></span>
-                    </label>
-                </PopupWithForm>
-
-                <PopupWithForm 
-                    name='delete-card' 
-                    title='Are you Sure?' 
-                    isOpen={isDeleteCardPopupOpen ? 'popup_open' : ''} 
-                    onClose={closeAllPopups} 
-                    buttonText="Yes" 
-                    onSubmit={submitHandler}
-                />
+                    <PopupWithForm 
+                        name='delete-card' 
+                        title='Are you Sure?' 
+                        isOpen={isDeleteCardPopupOpen ? 'popup_open' : ''} 
+                        onClose={closeAllPopups} 
+                        buttonText="Yes" 
+                        onSubmit={submitHandler}
+                    />
+                </div>
             </div>
-        </div>
+        </CurrentUserContext.Provider>
     );
 }
 

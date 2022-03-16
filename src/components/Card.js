@@ -1,12 +1,13 @@
 import { logDOM } from '@testing-library/react';
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
+import { CurrentUserContext } from '../contexts/CurrentUserContext';
 
 function Card(props) {
 
     // console.log("Card props", props);
-
-    const isOwner = props.userId === props.card.owner._id;
-    const isLiked = props.card.likes.some(user => props.userId === user._id)
+    const currentUser = useContext(CurrentUserContext);
+    const isOwner = currentUser._id === props.card.owner._id;
+    const isLiked = props.card.likes.some(user => currentUser._id === user._id)
     
     return(
         <li className="cards__card">
@@ -26,7 +27,7 @@ function Card(props) {
                     <button 
                         className={`cards__like-button ${isLiked ? 'cards__like-button_active' : '' }`} 
                         type="button"
-                        onClick={() => {props.likeCard(props.card._id, props.userId, props.card.likes, props)}}
+                        onClick={() => {props.likeCard(props.card._id, currentUser._id, props.card.likes, props)}}
                     />
                     <span className="cards__likes-counter">{props.card.likes.length}</span>
                 </div>
