@@ -8,7 +8,6 @@ import ImagePopup from './ImagePopup.js';
 import api from '../utils/api.js';
 import React, { useState, useEffect } from 'react';
 import { CurrentUserContext } from '../../src/contexts/CurrentUserContext.js';
-import { logDOM } from '@testing-library/react';
 
 //** This the main file of the application.  */
 function App() {
