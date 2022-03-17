@@ -8,6 +8,14 @@ function Card(props) {
     const currentUser = useContext(CurrentUserContext);
     const isOwner = currentUser._id === props.card.owner._id;
     const isLiked = props.card.likes.some(user => currentUser._id === user._id)
+
+    function handleLikeClick() {
+        props.onCardLike(props.Card)
+    }
+
+    function handleDeleteCard() {
+        props.onCardDelete(props.Card)
+    }
     
     return(
         <li className="cards__card">
@@ -19,7 +27,7 @@ function Card(props) {
             />
             <button 
                 className={`cards__delete-button${isOwner ? '' : '_invisible'}`} 
-                type="button" onClick={() => { props.deleteCard(props.card) }}
+                type="button" onClick={handleDeleteCard}
             />
             <div className="cards__group">
                 <h2 className="cards__header">{props.name}</h2>
@@ -27,7 +35,7 @@ function Card(props) {
                     <button 
                         className={`cards__like-button ${isLiked ? 'cards__like-button_active' : '' }`} 
                         type="button"
-                        onClick={() => {props.likeCard(props.card._id, currentUser._id, props.card.likes, props)}}
+                        onClick={handleLikeClick}
                     />
                     <span className="cards__likes-counter">{props.card.likes.length}</span>
                 </div>

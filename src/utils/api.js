@@ -56,19 +56,27 @@ class Api {
     })
   }
 
-  likeCard(cardId) {
+  changeLikeCardStatus(cardId, isLiked) {
+    const methodType = isLiked ? 'PUT' : 'DELETE'
     return this.customFetch(`${this._baseUrl}/cards/likes/${cardId}`, {
       headers: this._headers, 
-      method: 'PUT',
+      method: methodType,     
     })
   }
 
-  dislikeCard(cardId) {
-    return this.customFetch(`${this._baseUrl}/cards/likes/${cardId}`, {
-      headers: this._headers, 
-      method: 'DELETE',
-    })
-  }
+  // likeCard(cardId) {
+  //   return this.customFetch(`${this._baseUrl}/cards/likes/${cardId}`, {
+  //     headers: this._headers, 
+  //     method: 'PUT',
+  //   })
+  // }
+
+  // dislikeCard(cardId) {
+  //   return this.customFetch(`${this._baseUrl}/cards/likes/${cardId}`, {
+  //     headers: this._headers, 
+  //     method: 'DELETE',
+  //   })
+  // }
 }
 
 

@@ -8,23 +8,32 @@ function Main(props) {
 
     // console.log("Main: ", props);
     const currentUser = useContext(CurrentUserContext);
-    console.log("currentUser: ", currentUser);
+    // console.log("currentUser: ", currentUser);
     const [cards, setCards] = useState([]);
 
     useEffect(() => {
-        Promise.all([api.getUserInfo(), api.getInitialCards()])
-        .then(([userData, cardsData]) => {
-            // setUserName(userData.name)
-            // setUserDescription(userData.about)
-            // setUserAvatar(userData.avatar)
-            // setUserId(userData._id)
+        Promise.all([api.getInitialCards()])
+        .then(([cardsData]) => {
             setCards(cardsData)
         })
         .catch(err => {
             console.log(err);
         });
-        // console.log("userData ---1", cards);
     }, []);
+
+    function handleCardLike(card) {
+        // Check one more time if this card was already liked
+        const isLiked = card.likes.some(i => i._id === currentUser._id);
+        // Send a request to the API and getting the updated card data
+        api.changeLikeCardStatus(card._id, !isLiked)
+        .then((newCard) => {
+            setCards((state) => state.map((c) => c._id === card._id ? newCard : c));
+        });
+    }
+
+    function handleCardDelete(card) {
+        props.onDeleteCardClick(card)
+    }
 
     return(
         <main className="main-content">
@@ -53,8 +62,8 @@ function Main(props) {
                                 name={item.name}
                                 link={item.link}
                                 onCardClick={props.onCardClick}
-                                deleteCard={props.deleteCard}
-                                likeCard={props.likeCard}
+                                onCardDelete={() => handleCardDelete(item)}
+                                onCardLike={() => handleCardLike(item)}
                             />
                         ))
                     }

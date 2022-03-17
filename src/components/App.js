@@ -3,22 +3,22 @@ import Main from './Main.js';
 import Footer from './Footer.js';
 import Card from './Card.js';
 import PopupWithForm from './PopupWIthForm.js';
+import EditProfilePopup from './EditProfilePopup.js';
 import ImagePopup from './ImagePopup.js';
 import api from '../utils/api.js';
 import React, { useState, useEffect } from 'react';
 import { CurrentUserContext } from '../../src/contexts/CurrentUserContext.js';
+import { logDOM } from '@testing-library/react';
 
 //** This the main file of the application.  */
 function App() {
 
     const [currentUser , setCurrentUser ] = useState({});
-    const [cards, setCards] = useState([]);
-
+    
     useEffect(() => {
-        Promise.all([api.getUserInfo(), api.getInitialCards()])
-        .then(([userData, cardsData]) => {
+        Promise.all([api.getUserInfo()])
+        .then(([userData]) => {
             setCurrentUser(userData);
-            setCards(cardsData);
         })
         .catch(err => {
             console.log(err);
@@ -31,7 +31,7 @@ function App() {
     const [isAddPlacePopupOpen, setStateAddPlacePopupOpen] = useState(false);
     const [isDeleteCardPopupOpen, setStateDeleteCardPopupOpen] = useState(false);
     const [isImagePopupOpen, setStateImagePopupOpen] = useState(false);
-    const [selectedCard, setSelectedCard] = useState({})
+    const [selectedCard, setSelectedCard] = useState({});
         
     function closeAllPopups() {
         setStateEditProfilePopupOpen(false);
@@ -47,6 +47,8 @@ function App() {
 
     function handleEditProfileClick() {
         setStateEditProfilePopupOpen(true);
+        document.querySelector('.popup__input_content_name').value = currentUser.name;
+        document.querySelector('.popup__input_content_description').value = currentUser.about
     }
 
     function handleAddPlaceClick() {
@@ -63,28 +65,28 @@ function App() {
         setSelectedCard(card)
     }
 
-    function HandleLikeCard(cardId, userId, likesArray, props) {
-        console.log(props.card.likes);
-        if (!likesArray.find(user => user._id === userId)) {
-            console.log("Card liked!!!", cardId, userId, likesArray)
-            api.likeCard(cardId)
-                .then((res) => {
-                    console.log("Response (added like for card):", res.likes);
-                })
-                .catch(err => 
-                    console.log("Error:", err)
-                );
-        } else {
-            console.log("Card disliked!!!", cardId, userId, likesArray)
-            api.dislikeCard(cardId)
-            .then((res) => {
-                console.log("Response (removed like from card):", res.likes);
-            })
-            .catch(err => 
-                console.log("Error:", err)
-            );
-        }
-    }
+    // function HandleLikeCard(cardId, userId, likesArray, props) {
+    //     console.log(props.card.likes);
+    //     if (!likesArray.find(user => user._id === userId)) {
+    //         console.log("Card liked!!!", cardId, userId, likesArray)
+    //         api.likeCard(cardId)
+    //             .then((res) => {
+    //                 console.log("Response (added like for card):", res.likes);
+    //             })
+    //             .catch(err => 
+    //                 console.log("Error:", err)
+    //             );
+    //     } else {
+    //         console.log("Card disliked!!!", cardId, userId, likesArray)
+    //         api.dislikeCard(cardId)
+    //         .then((res) => {
+    //             console.log("Response (removed like from card):", res.likes);
+    //         })
+    //         .catch(err => 
+    //             console.log("Error:", err)
+    //         );
+    //     }
+    // }
 
     useEffect(() => {
         const closeByEscape = (evt) => {
@@ -106,9 +108,18 @@ function App() {
         return () => document.removeEventListener('mouseup', closeByOverlay)
     }, [])
 
+    function handlerUpdateUser(data) {
+        api.setUserInfo(data)
+            .then(() => {
+                console.log("User data updated: ", data);
+            })
+            .catch((err) => {
+                console.log("Error:", err);
+            })
+    }
+
     function submitHandler(e) {
         e.preventDefault();
-        console.log("Submited.");
         closeAllPopups();
     }
 
@@ -126,8 +137,8 @@ function App() {
                         isAddPlacePopupOpen={isAddPlacePopupOpen}
                         isEditAvatarPopupOpen={isEditAvatarPopupOpen}
                         isImagePopupOpen={isImagePopupOpen}
-                        deleteCard={handleDeleteCard}
-                        likeCard={HandleLikeCard}
+                        onDeleteCardClick={handleDeleteCard}
+                        // likeCard={HandleLikeCard}
                         />
                     <Footer />
 
@@ -138,41 +149,11 @@ function App() {
                         selectedCard={selectedCard}
                     />
 
-                    <PopupWithForm 
-                        name='edit-profile' 
-                        title='Edit Profile' 
-                        isOpen={isEditProfilePopupOpen ? 'popup_open' : ''} 
-                        onClose={closeAllPopups} 
-                        buttonText="Save" 
-                        onSubmit={submitHandler}
-                    >
-                        <label className="popup__field">
-                            <input 
-                                type="text" 
-                                className="popup__input popup__input_content_name" 
-                                id="input-name" 
-                                name="name" 
-                                placeholder="What is your name" 
-                                minLength="2" 
-                                maxLength="40" 
-                                required 
-                            />
-                            <span className="input-name-error"></span>
-                        </label>
-                        <label className="popup__field">
-                            <input 
-                                type="text" 
-                                className="popup__input popup__input_content_description" 
-                                id="input-about" 
-                                name="about" 
-                                placeholder="Describe your role" 
-                                minLength="2" 
-                                maxLength="200" 
-                                required 
-                            />
-                            <span className="input-about-error"></span>
-                        </label>
-                    </PopupWithForm>
+                    <EditProfilePopup
+                        isOpen={isEditProfilePopupOpen}
+                        onClose={closeAllPopups}
+                        onUpdateUser={handlerUpdateUser}
+                    />
 
                     <PopupWithForm 
                         name='add-card' 
