@@ -1,7 +1,5 @@
-import React from 'react';
-
 function PopupWithForm(props) {
-    // console.log("Popup with form", props);
+    console.log("Popup with form", props._id);
 
     return(
         <div className={`popup popup_type_${props.name} ${props.isOpen}`}>

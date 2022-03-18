@@ -1,5 +1,5 @@
 import React from "react";
-import PopupWithForm from "./PopupWIthForm";
+import PopupWithForm from "./PopupWithForm";
 
 function DeleteCardPopup(props) {
     console.log("Delete Card Popup: ", props);    
