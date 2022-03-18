@@ -1,5 +1,3 @@
-import Card from './Card.js';
-
 function ImagePopup(props) {
     // console.log("PopupWithImage", props)
     return(
