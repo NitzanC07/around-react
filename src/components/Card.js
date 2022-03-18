@@ -1,4 +1,3 @@
-import { logDOM } from '@testing-library/react';
 import React, { useState, useContext } from 'react';
 import { CurrentUserContext } from '../contexts/CurrentUserContext';
 
@@ -13,8 +12,8 @@ function Card(props) {
         props.onCardLike(props.Card)
     }
 
-    function handleDeleteCard() {
-        props.onCardDelete(props.Card)
+    function handleDeleteClick() {
+        props.onCardDelete(props.card._id)
     }
     
     return(
@@ -27,7 +26,7 @@ function Card(props) {
             />
             <button 
                 className={`cards__delete-button${isOwner ? '' : '_invisible'}`} 
-                type="button" onClick={handleDeleteCard}
+                type="button" onClick={handleDeleteClick}
             />
             <div className="cards__group">
                 <h2 className="cards__header">{props.name}</h2>

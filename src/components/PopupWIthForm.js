@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from 'react';
-import EditProfilePopup from './EditProfilePopup';
+import React from 'react';
 
 function PopupWithForm(props) {
     // console.log("Popup with form", props);
