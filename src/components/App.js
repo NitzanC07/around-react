@@ -4,6 +4,7 @@ import Footer from './Footer.js';
 import Card from './Card.js';
 import PopupWithForm from './PopupWIthForm.js';
 import EditProfilePopup from './EditProfilePopup.js';
+import EditAvatarPopup from './EditAvatarPopup.js';
 import ImagePopup from './ImagePopup.js';
 import api from '../utils/api.js';
 import React, { useState, useEffect } from 'react';
@@ -64,29 +65,6 @@ function App() {
         setSelectedCard(card)
     }
 
-    // function HandleLikeCard(cardId, userId, likesArray, props) {
-    //     console.log(props.card.likes);
-    //     if (!likesArray.find(user => user._id === userId)) {
-    //         console.log("Card liked!!!", cardId, userId, likesArray)
-    //         api.likeCard(cardId)
-    //             .then((res) => {
-    //                 console.log("Response (added like for card):", res.likes);
-    //             })
-    //             .catch(err => 
-    //                 console.log("Error:", err)
-    //             );
-    //     } else {
-    //         console.log("Card disliked!!!", cardId, userId, likesArray)
-    //         api.dislikeCard(cardId)
-    //         .then((res) => {
-    //             console.log("Response (removed like from card):", res.likes);
-    //         })
-    //         .catch(err => 
-    //             console.log("Error:", err)
-    //         );
-    //     }
-    // }
-
     useEffect(() => {
         const closeByEscape = (evt) => {
             if (evt.key === 'Escape') {
@@ -114,6 +92,16 @@ function App() {
             })
             .catch((err) => {
                 console.log("Error:", err);
+            })
+    }
+
+    function handleUpdateAvatar(data) {
+        api.changeAvatar(data)
+            .then(() => {
+                console.log("Avatar was updated: ", data);
+            })
+            .catch((err) => {
+                console.log("Error: ", err);
             })
     }
 
@@ -188,26 +176,11 @@ function App() {
                         </label>
                     </PopupWithForm>
 
-                    <PopupWithForm 
-                        name='avatar' 
-                        title='Change Profile Picture' 
-                        isOpen={isEditAvatarPopupOpen ? 'popup_open' : ''} 
+                    <EditAvatarPopup 
+                        isOpen={isEditAvatarPopupOpen} 
                         onClose={closeAllPopups} 
-                        buttonText="Save" 
-                        onSubmit={submitHandler}
-                    >
-                        <label className="popup__field">
-                            <input 
-                                type="url" 
-                                className="popup__input popup__input_type_avatar" 
-                                id="input-avatar" 
-                                name="avatar" 
-                                placeholder="Image URL" 
-                                required 
-                            />
-                            <span className="input-avatar-error"></span>
-                        </label>
-                    </PopupWithForm>
+                        onUpdateAvatar={handleUpdateAvatar}
+                    />
 
                     <PopupWithForm 
                         name='delete-card' 

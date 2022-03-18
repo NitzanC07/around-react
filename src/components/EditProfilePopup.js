@@ -14,12 +14,10 @@ function EditProfilePopup(props) {
     }, [currentUser]); 
 
     function handleChangeNameInput(e) {
-        // console.log(e.target.value);
         setName(e.target.value)
     }
 
     function handleChangeAboutInput(e) {
-        // console.log(e.target.value);
         setDescription(e.target.value)
     }
 
