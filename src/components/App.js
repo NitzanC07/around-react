@@ -124,7 +124,7 @@ function App() {
                     about: data.about, 
                     avatar: currentUser.avatar,
                     _id: currentUser._id,
-                    cohort: currentUser._id
+                    cohort: currentUser.cohort
                 })
                 closeAllPopups();
             })
@@ -154,7 +154,7 @@ function App() {
                     about: currentUser.about, 
                     avatar: data.avatar,
                     _id: currentUser._id,
-                    cohort: currentUser._id
+                    cohort: currentUser.cohort
                 })
                 closeAllPopups();
             })
