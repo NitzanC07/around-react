@@ -30,7 +30,6 @@ function Main(props) {
                                 card={item} 
                                 key={item._id} 
                                 id={item._id} 
-                                userId={currentUser._id} 
                                 name={item.name}
                                 link={item.link}
                                 onCardClick={props.onCardClick}

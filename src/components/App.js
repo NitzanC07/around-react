@@ -4,6 +4,7 @@ import Footer from './Footer.js';
 import EditProfilePopup from './EditProfilePopup.js';
 import EditAvatarPopup from './EditAvatarPopup.js';
 import ImagePopup from './ImagePopup.js';
+import DeleteCardPopup from './DeleteCardPopup.js';
 import api from '../utils/api.js';
 import React, { useState, useEffect } from 'react';
 import { CurrentUserContext } from '../../src/contexts/CurrentUserContext.js';
@@ -13,7 +14,6 @@ import AddPlacePopup from './AddPlacePopup.js';
 function App() {
 
     const [currentUser , setCurrentUser ] = useState({});
-    
     const [cards, setCards] = useState([]);
 
     useEffect(() => {
@@ -23,7 +23,7 @@ function App() {
             setCards(cardsData);
         })
         .catch(err => {
-            console.log("Error: ", err);
+            console.log("Error - there is any communication with the server: ", err);
         });
     }, []);
 
@@ -33,52 +33,65 @@ function App() {
         // Send a request to the API and getting the updated card data
         api.changeLikeCardStatus(card._id, !isLiked)
         .then((newCard) => {
-            setCards((state) => state.map((c) => c._id === card._id ? newCard : c));
-        });
+            // console.log(newCard);
+            setCards((state) => 
+                state.map((c) => c._id === card._id ? newCard : c ));
+        })
+        .catch((err) => {
+            console.log("Error - there is any communication with the server: ", err);
+        })
     }
   
-    const [isEditProfilePopupOpen, setStateEditProfilePopupOpen] = useState(false);
-    const [isEditAvatarPopupOpen, setStateEditAvatarPopupOpen] = useState(false);
-    const [isAddPlacePopupOpen, setStateAddPlacePopupOpen] = useState(false);
-    const [isImagePopupOpen, setStateImagePopupOpen] = useState(false);
+    const [isEditProfilePopupOpen, setEditProfilePopupOpen] = useState(false);
+    const [isEditAvatarPopupOpen, setEditAvatarPopupOpen] = useState(false);
+    const [isAddPlacePopupOpen, setAddPlacePopupOpen] = useState(false);
+    const [isImagePopupOpen, setImagePopupOpen] = useState(false);
+    const [isDeleteCardPopupOpen, setDeleteCardPopupOpen] = useState(false);
     const [selectedCard, setSelectedCard] = useState({});
         
     function closeAllPopups() {
-        setStateEditProfilePopupOpen(false);
-        setStateEditAvatarPopupOpen(false);
-        setStateAddPlacePopupOpen(false);
-        setStateImagePopupOpen(false);
+        setEditProfilePopupOpen(false);
+        setEditAvatarPopupOpen(false);
+        setAddPlacePopupOpen(false);
+        setImagePopupOpen(false);
+        setDeleteCardPopupOpen(false);
     }
     
     function handleEditAvatarClick() {
-        setStateEditAvatarPopupOpen(true);
+        setEditAvatarPopupOpen(true);
     }
 
     function handleEditProfileClick() {
-        setStateEditProfilePopupOpen(true);
-        document.querySelector('.popup__input_content_name').value = currentUser.name;
-        document.querySelector('.popup__input_content_description').value = currentUser.about
+        setEditProfilePopupOpen(true);
     }
 
     function handleAddPlaceClick() {
-        setStateAddPlacePopupOpen(true);
+        setAddPlacePopupOpen(true);
     }
 
     function handleImageClick(card) {
         setSelectedCard(card)
-        setStateImagePopupOpen(true);
+        setImagePopupOpen(true);
+    }
+
+    function handleDeleteCardClick(card) {
+        // console.log("Ask to delete: ", card);
+        setSelectedCard(card);
+        setDeleteCardPopupOpen(true);
     }
 
     function handleCardDelete(card) {
+        // console.log("Card was submitted: ", card);
         setSelectedCard(card)
         const cardId = card._id
         api.deleteCard(cardId)
         .then(() => {
             // console.log("Card was deleted.", card);
             setCards((cards) => cards.filter((c) => c._id !== cardId))
+            closeAllPopups();
         })
         .catch((err) => {
-            console.log("Error: ", err);
+            console.log("Error - there is any communication with the server: ", err);
         })
     }
 
@@ -105,31 +118,48 @@ function App() {
     function handlerUpdateUser(data) {
         api.setUserInfo(data)
             .then(() => {
-                console.log("User data updated: ", data);
+                // console.log("User data updated: ", data);
+                setCurrentUser({
+                    name: data.name, 
+                    about: data.about, 
+                    avatar: currentUser.avatar,
+                    _id: currentUser._id,
+                    cohort: currentUser._id
+                })
+                closeAllPopups();
             })
             .catch((err) => {
-                console.log("Error:", err);
+                console.log("Error - there is any communication with the server: ", err);
             })
     }
 
     function handlerUpdateAddCard(newCard) {
         api.createCard(newCard)
             .then((card) => {
-                console.log("Card was added.", card);
+                // console.log("Card was added.", card);
                 setCards([card, ...cards]);
+                closeAllPopups();
             })
             .catch((err) => {
-                console.log("Error: ", err);
+                console.log("Error - there is any communication with the server: ", err);
             })
     }
 
     function handleUpdateAvatar(data) {
         api.changeAvatar(data)
             .then(() => {
-                console.log("Avatar was updated: ", data);
+                // console.log("Avatar was updated: ", data);
+                setCurrentUser({
+                    name: currentUser.name, 
+                    about: currentUser.about, 
+                    avatar: data.avatar,
+                    _id: currentUser._id,
+                    cohort: currentUser._id
+                })
+                closeAllPopups();
             })
             .catch((err) => {
-                console.log("Error: ", err);
+                console.log("Error - there is any communication with the server: ", err);
             })
     }
 
@@ -148,7 +178,7 @@ function App() {
                         isEditAvatarPopupOpen={isEditAvatarPopupOpen}
                         isImagePopupOpen={isImagePopupOpen}
                         cards={cards}
-                        onCardDelete={handleCardDelete}
+                        onCardDelete={handleDeleteCardClick}
                         onCardlikeClick={handleCardLike}
                         />
                     <Footer />
@@ -177,6 +207,13 @@ function App() {
                         isOpen={isEditAvatarPopupOpen} 
                         onClose={closeAllPopups} 
                         onUpdateAvatar={handleUpdateAvatar}
+                    />
+
+                    <DeleteCardPopup 
+                        isOpen={isDeleteCardPopupOpen}
+                        onClose={closeAllPopups}
+                        onUpdateDeleteCard={handleCardDelete}
+                        selectedCard={selectedCard}
                     />
                     
                 </div>

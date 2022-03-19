@@ -1,17 +1,13 @@
-import { useState, useEffect, useContext } from "react";
-import { CurrentUserContext } from "../contexts/CurrentUserContext";
+import { useState } from "react";
 import PopupWithForm from "./PopupWithForm";
 
 function EditAvatarPopup(props) {
     // console.log("Edit Avatar Popup", props);
 
     const [avatar, setAvatar] = useState('');
-    const currentUser = useContext(CurrentUserContext);
-    useEffect(() => {
-        setAvatar(currentUser.avatar);
-    }, [currentUser])
 
     function handleChangeAvatarInput(e) {
+        // console.log(e.target.value);
         setAvatar(e.target.value)
     }
 
@@ -20,8 +16,6 @@ function EditAvatarPopup(props) {
         props.onUpdateAvatar({
             avatar: avatar,
         });
-        currentUser.avatar = avatar;
-        props.onClose();
     }
 
     return(
@@ -40,6 +34,7 @@ function EditAvatarPopup(props) {
                     id="input-avatar" 
                     name="avatar" 
                     placeholder="Input an image URL" 
+                    value={avatar || ''}
                     onChange={handleChangeAvatarInput}
                     required 
                 />

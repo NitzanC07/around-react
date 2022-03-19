@@ -1,5 +1,5 @@
 function PopupWithForm(props) {
-    console.log("Popup with form", props._id);
+    // console.log("Popup with form", props);
 
     return(
         <div className={`popup popup_type_${props.name} ${props.isOpen}`}>
@@ -8,7 +8,6 @@ function PopupWithForm(props) {
                     className="popup__form popup__form_profile" 
                     name={props.name}
                     onSubmit={props.onSubmit} 
-                    noValidate
                 >
                     <button 
                         type="button"

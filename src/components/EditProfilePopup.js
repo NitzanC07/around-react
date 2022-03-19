@@ -11,13 +11,15 @@ function EditProfilePopup(props) {
     useEffect(() => {
         setName(currentUser.name);
         setDescription(currentUser.about);
-    }, [currentUser]); 
+    }, [currentUser, props.isOpen]); 
 
     function handleChangeNameInput(e) {
+        // console.log(e.target.value);
         setName(e.target.value)
     }
 
     function handleChangeAboutInput(e) {
+        // console.log(e.target.value);
         setDescription(e.target.value)
     }
 
@@ -26,10 +28,7 @@ function EditProfilePopup(props) {
         props.onUpdateUser({
             name: name,
             about: description,
-          });
-        currentUser.name = name;
-        currentUser.about = description;
-        props.onClose();
+        });
     }
 
     return(
@@ -50,6 +49,7 @@ function EditProfilePopup(props) {
                     placeholder="What is your name?" 
                     minLength="2" 
                     maxLength="40" 
+                    value={name || ''}
                     onChange={handleChangeNameInput}
                     required 
                 />
@@ -64,6 +64,7 @@ function EditProfilePopup(props) {
                     placeholder="Describe your role" 
                     minLength="2" 
                     maxLength="200" 
+                    value={description || ''}
                     onChange={handleChangeAboutInput}
                     required 
                 />

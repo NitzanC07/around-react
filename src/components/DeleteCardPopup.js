@@ -2,13 +2,11 @@ import React from "react";
 import PopupWithForm from "./PopupWithForm";
 
 function DeleteCardPopup(props) {
-    console.log("Delete Card Popup: ", props);    
+    // console.log("Delete Card Popup: ", props);    
 
     function submitHandler(e) {
         e.preventDefault();
-        console.log("Cards was deleted.", e.target);
-        // props.onSubmitClick(card)
-        props.onClose();
+        props.onUpdateDeleteCard(props.selectedCard)
     }
     return(
         <PopupWithForm 

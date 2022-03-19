@@ -8,10 +8,12 @@ function AddPlacePopup(props) {
     const [url, setUrl] = useState('');
 
     function handleChangeNameInput(e) {
+        // console.log(e.target.value);
         setName(e.target.value);
     }
 
     function handleChangeUrlInput(e) {
+        // console.log(e.target.value);
         setUrl(e.target.value);
     }
 
@@ -22,7 +24,6 @@ function AddPlacePopup(props) {
             link: url,
         }
         props.onUpdateAddCard(data)
-        props.onClose();
     }
 
     return(
@@ -43,6 +44,7 @@ function AddPlacePopup(props) {
                     placeholder="Title" 
                     minLength="1" 
                     maxLength="30" 
+                    value={name || ''}
                     onChange={handleChangeNameInput}
                     required 
                 />
@@ -55,6 +57,7 @@ function AddPlacePopup(props) {
                     id="input-image" 
                     name="link" 
                     placeholder="Image URL" 
+                    value={url || ''}
                     onChange={handleChangeUrlInput}
                     required 
                 />
